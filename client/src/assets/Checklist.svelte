@@ -26,7 +26,6 @@
 
   function saveHandler() {
     listItems[currentItemIndex] = currentItemText;
-
     clearCurrentItem();
   }
 
@@ -34,7 +33,6 @@
     listItems.splice(index, 1);
     listItems = listItems;
     clearCurrentItem();
-    console.log(listItems);
   }
 
 </script>
