@@ -7,6 +7,9 @@
   let listItems = $state(["Koriander", "Chili", "Tofu", "Risnudler"]);
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
+  let isEmptyString = $derived(
+    currentItemText === null || currentItemText === "",
+  );
 
   function addHandler() {
     listItems = [...listItems, currentItemText];
@@ -60,8 +63,8 @@
   <button onclick={clearCurrentItem}>Cancel</button>
   {#if currentItemIndex !== null}
     <button onclick={() => deleteHandler(currentItemIndex)}>Delete</button>
-    <button onclick={saveHandler}>Save</button>
+    <button onclick={saveHandler} disabled={isEmptyString}>Save</button>
   {:else}
-    <button onclick={addHandler}>Add</button>
+    <button onclick={addHandler} disabled={isEmptyString}>Add</button>
   {/if}
 </dialog>
