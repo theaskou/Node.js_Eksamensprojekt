@@ -1,5 +1,5 @@
 <script>
-  import Checklist from "./assets/Checklist.svelte";
+  import Checklist from "./lib/Checklist.svelte";
 </script>
 
 <Checklist />

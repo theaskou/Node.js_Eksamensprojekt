@@ -4,9 +4,9 @@
   const listName = "Indkøbsliste";
   let dialog;
 
-  let listItems = ["Koriander", "Chili", "Tofu", "Risnudler"];
-  let currentItemText = null;
-  let currentItemIndex = null;
+  let listItems = $state(["Koriander", "Chili", "Tofu", "Risnudler"]);
+  let currentItemText = $state(null);
+  let currentItemIndex = $state(null);
 
   function addHandler() {
     listItems = [...listItems, currentItemText];
@@ -31,10 +31,8 @@
 
   function deleteHandler(index) {
     listItems.splice(index, 1);
-    listItems = listItems;
     clearCurrentItem();
   }
-
 </script>
 
 <h1>{listName}</h1>
@@ -45,7 +43,7 @@
       <label>
         <input type="checkbox" />
         <button
-          on:click={() => editHandler(index)}
+          onclick={() => editHandler(index)}
           command="show-modal"
           commandfor="add-item-dialog">✏️</button
         >
@@ -59,11 +57,11 @@
 
 <dialog id="add-item-dialog" bind:this={dialog}>
   <input type="text" bind:value={currentItemText} placeholder="…" />
-  <button on:click={clearCurrentItem}>Cancel</button>
+  <button onclick={clearCurrentItem}>Cancel</button>
   {#if currentItemIndex !== null}
-    <button on:click={saveHandler}>Save</button>
-    <button on:click={() => deleteHandler(currentItemIndex)}>Delete</button>
+    <button onclick={() => deleteHandler(currentItemIndex)}>Delete</button>
+    <button onclick={saveHandler}>Save</button>
   {:else}
-    <button on:click={addHandler}>Add</button>
+    <button onclick={addHandler}>Add</button>
   {/if}
 </dialog>
