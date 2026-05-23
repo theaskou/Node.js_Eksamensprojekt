@@ -66,7 +66,7 @@
 </ul>
 
 <button class="add-button" command="show-modal" commandfor="add-item-dialog"
-  >✚</button
+  >+</button
 >
 
 <dialog id="add-item-dialog" bind:this={dialog}>

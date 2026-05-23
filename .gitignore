@@ -200,3 +200,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Database
+database.db
+seedData.js

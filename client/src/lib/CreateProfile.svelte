@@ -22,8 +22,8 @@
     { name: "hummingbird", src: "/avatars/hummingbird.png" },
     { name: "kiwi", src: "/avatars/kiwi.png" },
     { name: "mallard", src: "/avatars/mallard.png" },
-    { name: "red-robin", src: "/avatars/robin1.png" },
-    { name: "black-robin", src: "/avatars/robin2.png" },
+    { name: "robin", src: "/avatars/robin.png" },
+    { name: "oriole", src: "/avatars/oriole.png" },
     { name: "sparrow", src: "/avatars/sparrow.png" },
     { name: "stork", src: "/avatars/stork.png" },
     { name: "tit", src: "/avatars/tit.png" },
@@ -32,70 +32,75 @@
   let selectedAvatar = null;
 </script>
 
-<div class="headlines">
-  <h1>Hi [**name**]!</h1>
+<div class="container">
+  <div>
+    <div class="headlines">
+      <h1>Hi [**name**]!</h1>
 
-  <h2>Pick a color and an avatar to get started:</h2>
-</div>
+      <h2>Pick a color and an avatar to get started:</h2>
+    </div>
 
-<div class="profile-avatar-creator">
-  <div class="color-picker">
-    {#each colors as color}
-      <button
-        class="color-option"
-        aria-label={color.color}
-        style="background-color: {color.value}"
-        onclick={() => {
-          selectedColor = color;
-        }}
-      >
-        {#if selectedColor === color}
-          ✔
-        {/if}
-      </button>
-    {/each}
-  </div>
+    <div class="profile-avatar-creator">
+      <div class="color-picker">
+        {#each colors as color}
+          <button
+            class="color-option"
+            aria-label={color.color}
+            style="background-color: {color.value}"
+            onclick={() => {
+              selectedColor = color;
+            }}
+          >
+            {#if selectedColor === color}
+              ✔
+            {/if}
+          </button>
+        {/each}
+      </div>
 
-  <div class="avatar-picker">
-    {#each avatars as avatar}
-      <button
-        class="avatar-option"
-        disabled={!selectedColor}
-        style="background-color: {selectedAvatar === avatar && selectedColor
-          ? selectedColor.value
-          : 'transparent'}"
-        onclick={() => {
-          selectedAvatar = avatar;
-          console.log(selectedAvatar);
-        }}
-      >
-        <img src={avatar.src} alt={avatar.name} />
-      </button>
-    {/each}
+      <div class="avatar-picker">
+        {#each avatars as avatar}
+          <button
+            class="avatar-option"
+            disabled={!selectedColor}
+            style="background-color: {selectedAvatar === avatar && selectedColor
+              ? selectedColor.value
+              : 'transparent'}"
+            onclick={() => {
+              selectedAvatar = avatar;
+            }}
+          >
+            <img src={avatar.src} alt={avatar.name} />
+          </button>
+        {/each}
+      </div>
+    </div>
   </div>
 
   <button class="save-button">Save</button>
 </div>
 
 <style>
-  .headlines {
-    margin: 12px;
-    margin-bottom: 24px;
+  .container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 
   .profile-avatar-creator {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    min-height: 75vh;
-    margin: 12px;
+    gap: 1rem;
   }
 
   .color-picker {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    justify-content: center;
   }
 
   .color-option {
@@ -109,6 +114,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    justify-content: center;
   }
 
   .avatar-option {

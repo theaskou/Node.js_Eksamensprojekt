@@ -3,5 +3,5 @@
   import CreateProfile from "./lib/CreateProfile.svelte";
 </script>
 
-<!-- <Checklist /> -->
-<CreateProfile />
+<Checklist />
+<!-- <CreateProfile /> -->

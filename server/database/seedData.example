@@ -1,0 +1,43 @@
+export default {
+  users: [
+    {
+      user_name: "",
+      email: "",
+      pwd: "",
+      verified: true,
+      avatar: 1,
+      color: 1,
+    },
+  ],
+
+  lists: [
+    {
+      name: "",
+      created_by: 1,
+    },
+  ],
+
+  list_members: [
+    {
+      list_id: 1,
+      user_id: 1,
+    },
+  ],
+
+  list_items: [
+    {
+      list_id: 1,
+      item_name: "",
+      added_by: 1,
+      checked: 0,
+      checked_by: null,
+    },
+    {
+      list_id: 1,
+      item_name: "",
+      added_by: 1,
+      checked: 1,
+      checked_by: 1,
+    },
+  ],
+};
