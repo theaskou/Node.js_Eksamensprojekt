@@ -12,5 +12,10 @@
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "svelte": "^5.55.4",
     "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "@zerodevx/svelte-toast": "^0.9.6",
+    "dotenv": "^17.4.2",
+    "svelte-routing": "^2.13.0"
   }
 }

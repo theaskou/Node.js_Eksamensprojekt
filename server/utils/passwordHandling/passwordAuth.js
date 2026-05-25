@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import db from "../../database/connection.js";
 
-async function passwordAuthentication(userName, password) {
+async function passwordAuthentication(email, password) {
   const user = db
-    .prepare(`SELECT id, pwd FROM users WHERE user_name = ?`)
-    .get(userName);
+    .prepare(`SELECT id, pwd FROM users WHERE email = ?`)
+    .get(email);
 
   if (!user) {
     return;
