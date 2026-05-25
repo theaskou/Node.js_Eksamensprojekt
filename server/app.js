@@ -42,14 +42,20 @@ app.use(loginRouter);
 import signUpRouter from "./routers/signUpRouter.js";
 app.use(signUpRouter);
 
-import verifyEmailRouter from "./routers/verifyEmailRouter.js";
-app.use(verifyEmailRouter);
-
 import logoutRouter from "./routers/logoutRouter.js";
 app.use(logoutRouter);
 
-import listsRouter from "./routers/listsRouter.js";
-app.use(listsRouter);
+import avatarRouter from "./routers/avatarsRouter.js"
+app.use(avatarRouter);
+
+import usersRouter from "./routers/usersRouter.js"
+app.use(usersRouter);
+
+import usersListsRouter from "./routers/usersListsRouter.js";
+app.use(usersListsRouter);
+
+import verifyEmailRouter from "./routers/verifyEmailRouter.js";
+app.use(verifyEmailRouter);
 
 const PORT = process.env.PORT ?? 8080;
 

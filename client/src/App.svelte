@@ -46,7 +46,7 @@
     </Route>
     <Route path="/lists">
       <ProtectedRoute let:user>
-        <Lists />
+        <Lists user={user} />
       </ProtectedRoute>
     </Route>
   </main>

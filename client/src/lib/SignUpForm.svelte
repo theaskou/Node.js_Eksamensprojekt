@@ -21,7 +21,8 @@
     if (response.error) {
       toast.push(`${response.error}`);
     } else {
-      navigate("/welcome", { replace: true });
+      navigate("/createprofile", { replace: true });
+      toast.push(`${response.status}`)
     }
   }
 </script>

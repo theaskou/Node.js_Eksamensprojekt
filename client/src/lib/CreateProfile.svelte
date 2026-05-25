@@ -1,17 +1,17 @@
-<script>
+<!-- <script>
   const colors = [
-    { color: "turquoise", value: "#1ABC9C" },
-    { color: "light Blue", value: "#a2f4fd" },
-    { color: "blue", value: "#3498DB" },
-    { color: "purple", value: "#9B59B6" },
-    { color: "dark-green", value: "#008A00" },
-    { color: "green", value: "#27AE60" },
-    { color: "cobalt", value: "#0050EF" },
-    { color: "lime", value: "#7ccf00" },
-    { color: "yellow", value: "#F1C40F" },
-    { color: "orange", value: "#E67E22" },
-    { color: "red", value: "#E74C3C" },
-    { color: "dark-red", value: "#C0392B" },
+    { name: "turquoise", value: "#1ABC9C" },
+    { name: "light-blue", value: "#a2f4fd" },
+    { name: "blue", value: "#3498DB" },
+    { name: "purple", value: "#9B59B6" },
+    { name: "dark-green", value: "#008A00" },
+    { name: "green", value: "#27AE60" },
+    { name: "cobalt", value: "#0050EF" },
+    { name: "lime", value: "#7ccf00" },
+    { name: "yellow", value: "#F1C40F" },
+    { name: "orange", value: "#E67E22" },
+    { name: "red", value: "#E74C3C" },
+    { name: "dark-red", value: "#C0392B" },
   ];
   let selectedColor = null;
 
@@ -45,7 +45,7 @@
         {#each colors as color}
           <button
             class="color-option"
-            aria-label={color.color}
+            aria-label={color.name}
             style="background-color: {color.value}"
             onclick={() => {
               selectedColor = color;
@@ -134,4 +134,4 @@
   .save-button {
     align-self: center;
   }
-</style>
+</style> -->

@@ -13,8 +13,8 @@ db.exec(`
     email VARCHAR(100) NOT NULL UNIQUE,
     pwd VARCHAR(100) NOT NULL,
     verified INTEGER NOT NULL DEFAULT 0,
-    avatar INTEGER,
-    color INTEGER
+    avatar VARCHAR(50),
+    color VARCHAR(50)
     );
 `);
 
