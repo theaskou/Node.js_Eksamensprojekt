@@ -3,7 +3,7 @@
   import { fetchGet } from "../utils/fetchUtil";
   import { useLocation } from "svelte-routing";
   import Avatar from "./Avatar.svelte";
-  import { resolveColor } from "../lib/config/avatars.js";
+  import { resolveColor } from "./config/colors.js";
 
   let { user } = $props();
   let userData = $state(null);
@@ -17,24 +17,6 @@
 
     const listsResult = await fetchGet(`/users/${user.userID}/lists`);
     userLists = listsResult.data;
-
-    const allIds = [];
-    for (const members of Object.values(userLists)) {
-      for (const id of members) {
-        if (!allIds.includes(id)) {
-          allIds.push(id);
-        }
-      }
-    }
-
-    const avatarResults = await fetchGet(
-      `/users/avatars?ids=${allIds.join(",")}`,
-    );
-
-    memberAvatars = {};
-    for (const member of avatarResults) {
-      memberAvatars[member.id] = member;
-    }
   });
 </script>
 
@@ -43,20 +25,21 @@
   <div>Signed in as {userData.userName}</div>
 {/if}
 
+<!-- TODO: -->
+<button>Create list</button>
+
 <h1>Your lists:</h1>
 <ul>
-  {#each Object.entries(userLists) as [listName, members]}
+  {#each userLists as { listName, members }}
     <li>
       {listName}
       <div class="member-avatars">
-        {#each members as memberId}
-          {#if memberAvatars[memberId]}
-            <Avatar
-              avatar={memberAvatars[memberId].avatar}
-              color={resolveColor(memberAvatars[memberId].color)}
-              size={30}
-            />
-          {/if}
+        {#each members as member}
+          <Avatar
+            avatar={member.avatar}
+            color={resolveColor(member.color)}
+            size={30}
+          />
         {/each}
       </div>
     </li>

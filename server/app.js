@@ -45,9 +45,6 @@ app.use(signUpRouter);
 import logoutRouter from "./routers/logoutRouter.js";
 app.use(logoutRouter);
 
-import avatarRouter from "./routers/avatarsRouter.js"
-app.use(avatarRouter);
-
 import usersRouter from "./routers/usersRouter.js"
 app.use(usersRouter);
 
