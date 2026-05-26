@@ -51,6 +51,12 @@ app.use(usersRouter);
 import usersListsRouter from "./routers/usersListsRouter.js";
 app.use(usersListsRouter);
 
+import listsRouter from "./routers/listsRouter.js";
+app.use(listsRouter);
+
+import listItemsRouter from "./routers/listItemsRouter.js";
+app.use(listItemsRouter);
+
 import verifyEmailRouter from "./routers/verifyEmailRouter.js";
 app.use(verifyEmailRouter);
 

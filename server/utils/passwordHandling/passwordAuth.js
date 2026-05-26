@@ -3,7 +3,7 @@ import db from "../../database/connection.js";
 
 async function passwordAuthentication(email, password) {
   const user = db
-    .prepare(`SELECT id, pwd FROM users WHERE email = ?`)
+    .prepare(`SELECT user_id, pwd FROM users WHERE email = ?`)
     .get(email);
 
   if (!user) {

@@ -13,9 +13,9 @@ router.post("/login", rateLimiter, async (req, res) => {
       return res.status(401).json({ error: "Wrong credentials" });
     }
 
-    req.session.userID = authenticatedUser.id;
+    req.session.userID = authenticatedUser.user_id;
 
-    res.send({ data: authenticatedUser.id });
+    res.send({ data: authenticatedUser.user_id });
   } catch (error) {
     res.status(error.status ?? 500).json({ error: "Server error" });
   }

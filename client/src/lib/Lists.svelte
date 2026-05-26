@@ -12,6 +12,9 @@
   let userLists = $state({});
   let resolvedColor = $derived(resolveColor(userData?.color));
   let memberAvatars = $state({});
+  let newListName = $state("");
+  let isEmptyString = $derived(newListName === null || newListName === "");
+  let dialog;
 
   onMount(async () => {
     const userDataResult = await fetchGet("/users/me");
@@ -21,22 +24,44 @@
     userLists = listsResult.data;
   });
 
+  async function addHandler() {
+    await fetchPost(`/lists`, { listName: newListName });
+    const listsResult = await fetchGet(`/users/${user.userID}/lists`);
+    userLists = listsResult.data;
+    clearCurrentItem();
+  }
+
+  function clearCurrentItem() {
+    newListName = "";
+    dialog.close();
+  }
 </script>
 
 {#if userData}
   <Avatar avatar={userData.avatar} color={resolvedColor} />
   <div>Signed in as {userData.userName}</div>
-  <button onclick={logoutHandler}>Log out</button>
+  <button class="log-out-button" onclick={logoutHandler}>Log out</button>
 {/if}
 
-<!-- TODO: -->
-<button>Create list</button>
+<button
+  class="create-list-button"
+  command="show-modal"
+  commandfor="create-list-dialog">Create list</button
+>
+<dialog id="create-list-dialog" bind:this={dialog}>
+  <input type="text" bind:value={newListName} placeholder="Name your new list…" />
+  <button onclick={clearCurrentItem}>Cancel</button>
+  <button onclick={addHandler} disabled={isEmptyString}>Add</button>
+</dialog>
 
 <h1>Your lists:</h1>
 <ul>
   {#each userLists as { listID, listName, members }}
-    <li>
-      <button onclick={() => navigate(`/lists/${listID}`)}>
+    <li class="list">
+      <button
+        class="navigate-to-checklist-button"
+        onclick={() => navigate(`/lists/${listID}`)}
+      >
         {listName}
         <div class="member-avatars">
           {#each members as member}

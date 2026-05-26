@@ -8,11 +8,11 @@ router.get("/users/:id/lists", authMiddleware, (req, res) => {
   const rows = db
     .prepare(
       `
-SELECT lists.id AS list_id, lists.list_name, users.id AS user_id, users.avatar, users.color
+SELECT lists.list_id, lists.list_name, users.user_id, users.avatar, users.color
   FROM lists
-  INNER JOIN list_members ON lists.id = list_members.list_id
-  INNER JOIN users ON list_members.user_id = users.id
-  WHERE lists.id IN (SELECT list_id FROM list_members WHERE user_id = ?)
+  INNER JOIN list_members ON lists.list_id = list_members.list_id
+  INNER JOIN users ON list_members.user_id = users.user_id
+  WHERE lists.list_id IN (SELECT list_id FROM list_members WHERE user_id = ?)
 `,
     )
     .all(req.params.id);

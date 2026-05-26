@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from "svelte";
+  import { fetchGet } from "../utils/fetchUtil";
   // fetch checklist items
 
   // Online users, users typing...
@@ -7,17 +9,16 @@
 
   // (?) Make sure the last list viewed is the start view when reopening the application (?)
 
-  let { user, listID } = $props();
+  let { user, listID, listName } = $props();
+  let listItems = $state({})
 
-  // onMount(async () => {
-  //   const data = await fetchGet(`/lists/${listID}`);
-  //   // ...
-  // });
+  onMount(async () => {
+    listItems = await fetchGet(`/lists/${listID}/items`);
 
-  const listName = "Indkøbsliste";
+  });
+
   let dialog;
 
-  let listItems = $state(["Koriander", "Chili", "Tofu", "Risnudler"]);
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
   let isEmptyString = $derived(
@@ -59,7 +60,7 @@
       <label>
         <div>
           <input type="checkbox" />
-          {item}
+          {item.itemName}
         </div>
         <button
           class="edit-button"

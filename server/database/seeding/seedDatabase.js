@@ -20,11 +20,11 @@ async function seedDatabase() {
   }
 
   const seedLists = db.prepare(
-    `INSERT INTO lists (id, list_name, created_by) VALUES (?, ?, ?)`,
+    `INSERT INTO lists (list_id, list_name, created_by) VALUES (?, ?, ?)`,
   );
 
   for (const list of seedData.lists) {
-    seedLists.run(list.id, list.name, list.created_by);
+    seedLists.run(list.list_id, list.name, list.created_by);
   }
 
   const seedListMembers = db.prepare(`
