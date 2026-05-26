@@ -7,6 +7,13 @@
 
   // (?) Make sure the last list viewed is the start view when reopening the application (?)
 
+  let { user, listID } = $props();
+
+  // onMount(async () => {
+  //   const data = await fetchGet(`/lists/${listID}`);
+  //   // ...
+  // });
+
   const listName = "Indkøbsliste";
   let dialog;
 
