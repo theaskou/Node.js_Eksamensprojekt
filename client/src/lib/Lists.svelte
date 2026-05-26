@@ -12,7 +12,7 @@
   let memberAvatars = $state({});
 
   onMount(async () => {
-    const userDataResult = await fetchGet(`/users/${user.userID}`);
+    const userDataResult = await fetchGet(`/users/me`);
     userData = userDataResult;
 
     const listsResult = await fetchGet(`/users/${user.userID}/lists`);
