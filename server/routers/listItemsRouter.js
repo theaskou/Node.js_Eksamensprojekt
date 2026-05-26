@@ -1,9 +1,10 @@
 import { json, Router } from "express";
 import db from "../database/connection.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.get("/lists/:id/items", (req, res) => {
+router.get("/lists/:id/items", authMiddleware, (req, res) => {
   const getListItems = db
     .prepare(
       `
@@ -14,9 +15,10 @@ router.get("/lists/:id/items", (req, res) => {
 
   const getListName = db
     .prepare(`SELECT list_name from lists WHERE list_id = ?`)
-    .run(req.params.id);
+    .get(req.params.id);
 
-  const listItems = getListName = [];
+  const listItems = [];
+  const listName = getListName.list_name;
 
   for (const listItem of getListItems) {
     listItems.push(
@@ -31,8 +33,7 @@ router.get("/lists/:id/items", (req, res) => {
     );
   }
 
-  console.log(listItems);
-  res.json({ listItems });
+  res.json({ listName, listItems });
 });
 
 export default router;

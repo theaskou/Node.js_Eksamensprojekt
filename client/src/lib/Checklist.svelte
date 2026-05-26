@@ -1,32 +1,35 @@
 <script>
   import { onMount } from "svelte";
-  import { fetchGet } from "../utils/fetchUtil";
-  // fetch checklist items
+  import { fetchGet, fetchPost } from "../utils/fetchUtil";
 
   // Online users, users typing...
 
   // Back to lists view
 
-  // (?) Make sure the last list viewed is the start view when reopening the application (?)
-
-  let { user, listID, listName } = $props();
-  let listItems = $state({})
-
-  onMount(async () => {
-    listItems = await fetchGet(`/lists/${listID}/items`);
-
-  });
-
+  let { user, listID } = $props();
+  let listItems = $state({});
+  let listName = $state("");
   let dialog;
-
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
   let isEmptyString = $derived(
     currentItemText === null || currentItemText === "",
   );
 
-  function addHandler() {
-    listItems = [...listItems, currentItemText];
+  onMount(async () => {
+    const result = await fetchGet(`/lists/${listID}/items`);
+    listItems = result.listItems;
+    listName = result.listName;
+  });
+
+  async function addHandler() {
+    await fetchPost(`/lists/${listID}/listitems`, {
+      itemName: currentItemText,
+    });
+
+    const result = await fetchGet(`/lists/${listID}/items`);
+    listItems = result.listItems;
+
     clearCurrentItem();
   }
 

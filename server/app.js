@@ -57,6 +57,9 @@ app.use(listsRouter);
 import listItemsRouter from "./routers/listItemsRouter.js";
 app.use(listItemsRouter);
 
+import addListItemRouter from "./routers/addItemRouter.js";
+app.use(addListItemRouter);
+
 import verifyEmailRouter from "./routers/verifyEmailRouter.js";
 app.use(verifyEmailRouter);
 
