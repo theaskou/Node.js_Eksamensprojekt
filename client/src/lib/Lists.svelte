@@ -56,11 +56,11 @@
 
 <h1>Your lists:</h1>
 <ul>
-  {#each userLists as { listID, listName, members }}
+  {#each userLists as { listId, listName, members }}
     <li class="list">
       <button
         class="navigate-to-checklist-button"
-        onclick={() => navigate(`/lists/${listID}`)}
+        onclick={() => navigate(`/lists/${listId}`)}
       >
         {listName}
         <div class="member-avatars">

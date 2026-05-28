@@ -6,7 +6,7 @@
 
   // Back to lists view
 
-  let { user, listID } = $props();
+  let { user, listId } = $props();
   let listItems = $state({});
   let listName = $state("");
   let dialog;
@@ -17,17 +17,17 @@
   );
 
   onMount(async () => {
-    const result = await fetchGet(`/lists/${listID}/items`);
+    const result = await fetchGet(`/lists/${listId}/items`);
     listItems = result.listItems;
     listName = result.listName;
   });
 
   async function addHandler() {
-    await fetchPost(`/lists/${listID}/listitems`, {
+    await fetchPost(`/lists/${listId}/listitems`, {
       itemName: currentItemText,
     });
 
-    const result = await fetchGet(`/lists/${listID}/items`);
+    const result = await fetchGet(`/lists/${listId}/items`);
     listItems = result.listItems;
 
     clearCurrentItem();
@@ -50,7 +50,7 @@
   }
 
   async function deleteHandler(index) {
-    await fetchDelete(`/lists/${listID}/listitems/${listItems[index].itemID}`);
+    await fetchDelete(`/lists/${listId}/listitems/${listItems[index].itemID}`);
     listItems.splice(index, 1);
     clearCurrentItem();
   }

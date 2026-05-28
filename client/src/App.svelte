@@ -51,7 +51,7 @@
     </Route>
     <Route path="/lists/:id" let:params>
       <ProtectedRoute let:user>
-        <Checklist {user} listID={params.id} />
+        <Checklist {user} listId={params.id} />
       </ProtectedRoute>
     </Route>
   </main>

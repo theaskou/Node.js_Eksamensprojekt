@@ -6,24 +6,24 @@ const router = Router();
 
 router.post("/lists", authMiddleware, (req, res) => {
   const { listName } = req.body;
-  const userID = req.session.userID;
+  const userId = req.session.userID;
   const insertLists = db
     .prepare(
       `
         INSERT INTO lists (list_name, created_by) VALUES (?, ?)`,
     )
-    .run(listName, userID);
+    .run(listName, userId);
 
   const insertListsMembers = db
     .prepare(
       `
       INSERT INTO list_members (user_id, list_id) VALUES (?, ?)`,
     )
-    .run(userID, insertLists.lastInsertRowid);
+    .run(userId, insertLists.lastInsertRowid);
 
   res
     .status(201)
-    .json({ data: { listID: insertLists.lastInsertRowid, listName } });
+    .json({ data: { listId: insertLists.lastInsertRowid, listName } });
 });
 
 export default router;
