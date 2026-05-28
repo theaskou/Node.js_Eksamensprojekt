@@ -41,10 +41,7 @@
 
   function editHandler(index) {
     currentItemText = listItems[index].itemName;
-    
-    
-
-
+    currentItemIndex = index;
   }
 
   function saveHandler() {

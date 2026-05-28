@@ -1,22 +1,22 @@
 import { Router } from "express";
 import db from "../database/connection.js";
 import authMiddleware from "../middleware/authMiddleware.js";
-import session from "express-session";
+import listMemberMiddleware from "../middleware/listMemberMiddleware.js";
 
 const router = Router();
 
-router.get("/lists/:id/items", authMiddleware, (req, res) => {
+router.get("/lists/:listId/items", authMiddleware, (req, res) => {
   const getListItems = db
     .prepare(
       `
         SELECT * FROM list_items WHERE list_id = ?;
         `,
     )
-    .all(req.params.id);
+    .all(req.params.listId);
 
   const getListName = db
     .prepare(`SELECT list_name from lists WHERE list_id = ?`)
-    .get(req.params.id);
+    .get(req.params.listId);
 
   const listItems = [];
   const listName = getListName.list_name;
@@ -35,7 +35,7 @@ router.get("/lists/:id/items", authMiddleware, (req, res) => {
   res.json({ listName, listItems });
 });
 
-router.post("/lists/:id/listitems", authMiddleware, (req, res) => {
+router.post("/lists/:listId/listitems", authMiddleware, listMemberMiddleware, (req, res) => {
   const { itemName } = req.body;
   const addListItem = db
     .prepare(
@@ -43,25 +43,31 @@ router.post("/lists/:id/listitems", authMiddleware, (req, res) => {
         INSERT INTO list_items (list_id, item_name, added_by) VALUES (?, ?, ?)
         `,
     )
-    .run(req.params.id, itemName, req.session.userID);
+    .run(req.params.listId, itemName, req.session.userID);
 
   res.send({ data: addListItem });
+});
+
+router.put("/lists/:listId/listitems/:itemId", authMiddleware, listMemberMiddleware, (req, res) => {
+  const listId = req.params.listId;
+  const itemID = req.params.itemId;
+
+  const updatedItemName = req.body;
+  const update = db
+    .prepare(
+      `
+      INSERT INTO list_items.item_name VALUES ?`,
+    )
+    .run(updatedItemName);
 });
 
 router.delete(
   "/lists/:listId/listitems/:itemId",
   authMiddleware,
+  listMemberMiddleware,
   (req, res) => {
-    const listMembers = db
-      .prepare(`SELECT user_id FROM list_members WHERE list_id = ?`)
-      .all(req.params.listId);
-
-    const usercheck = listMembers.find(
-      ({ user_id }) => user_id === req.session.userID,
-    );
-    if (!usercheck) {
-      return res.json({ error: "You don't have permisson to delete this" });
-    }
+    const listId = req.params.listId;
+    const itemID = req.params.itemId;
 
     const result = db
       .prepare(
@@ -70,7 +76,7 @@ router.delete(
         WHERE item_id = ? AND list_id = ?
     `,
       )
-      .run(req.params.itemId, req.params.listId);
+      .run(itemID, listId);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: "Item not found" });
