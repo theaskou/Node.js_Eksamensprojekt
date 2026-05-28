@@ -33,35 +33,17 @@ app.use(
 import helmet from "helmet";
 app.use(helmet());
 
-import authCheckRouter from "./routers/authCheckRouter.js"
-app.use(authCheckRouter);
+import authRouter from "./routers/authRouter.js";
+app.use(authRouter);
 
-import loginRouter from "./routers/loginRouter.js";
-app.use(loginRouter);
-
-import signUpRouter from "./routers/signUpRouter.js";
-app.use(signUpRouter);
-
-import logoutRouter from "./routers/logoutRouter.js";
-app.use(logoutRouter);
-
-import usersRouter from "./routers/usersRouter.js"
+import usersRouter from "./routers/usersRouter.js";
 app.use(usersRouter);
-
-import usersListsRouter from "./routers/usersListsRouter.js";
-app.use(usersListsRouter);
 
 import listsRouter from "./routers/listsRouter.js";
 app.use(listsRouter);
 
 import listItemsRouter from "./routers/listItemsRouter.js";
 app.use(listItemsRouter);
-
-import addListItemRouter from "./routers/addItemRouter.js";
-app.use(addListItemRouter);
-
-import verifyEmailRouter from "./routers/verifyEmailRouter.js";
-app.use(verifyEmailRouter);
 
 const PORT = process.env.PORT ?? 8080;
 

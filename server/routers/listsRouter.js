@@ -14,8 +14,6 @@ router.post("/lists", authMiddleware, (req, res) => {
     )
     .run(listName, userID);
 
-  console.log("insertLists:", insertLists);
-
   const insertListsMembers = db
     .prepare(
       `

@@ -1,22 +1,62 @@
 export async function fetchGet(endpoint) {
-    try {
-        const response = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`, {
-            credentials: 'include'
-        });
-        return await response.json();
-    } catch(error) {
-        console.log(error);
-    }
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
+      {
+        credentials: "include",
+      },
+    );
+    return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchPost(endpoint, body) {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`, {
-        method: "POST",
-        credentials: 'include',
+  const response = await fetch(
+    `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  return await response.json();
+}
+
+export async function fetchPut(endpoint, body) {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
+      {
+        method: "PUT",
+        credentials: "include",
         headers: {
-            "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(body)
-    });
+        body: JSON.stringify(body),
+      },
+    );
     return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function fetchDelete(endpoint) {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
+    return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
 }

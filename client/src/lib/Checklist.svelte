@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { fetchGet, fetchPost } from "../utils/fetchUtil";
+  import { fetchDelete, fetchGet, fetchPost } from "../utils/fetchUtil";
 
   // Online users, users typing...
 
@@ -40,8 +40,11 @@
   }
 
   function editHandler(index) {
-    currentItemText = listItems[index];
-    currentItemIndex = index;
+    currentItemText = listItems[index].itemName;
+    
+    
+
+
   }
 
   function saveHandler() {
@@ -49,7 +52,8 @@
     clearCurrentItem();
   }
 
-  function deleteHandler(index) {
+  async function deleteHandler(index) {
+    await fetchDelete(`/lists/${listID}/listitems/${listItems[index].itemID}`);
     listItems.splice(index, 1);
     clearCurrentItem();
   }

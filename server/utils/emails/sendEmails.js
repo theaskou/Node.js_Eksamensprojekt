@@ -19,7 +19,7 @@ async function sendVerificationEmail(emailAddress, userName, userID) {
   const info = await transporter.sendMail({
     from: '"The Website" <website-email@example.com>',
     to: emailAddress ?? "example@example.com",
-    subject: `Welcome ${userName ?? "Potatoven"}!`,
+    subject: `Welcome ${userName}!`,
     text: `Verify your account here: ${verificationLink}`,
     html: `<h1>Welcome to the website!<h1> <p>Verify your account by clicking
     <a href="${verificationLink}">this link.</a></p>`,

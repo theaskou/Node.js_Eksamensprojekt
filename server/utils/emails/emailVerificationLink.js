@@ -10,7 +10,7 @@ function getRandomInt() {
 function getVerificationLink(userID) {
   const verificationToken = getRandomInt();
   verificationTokens.set(userID, verificationToken);
-  return `${process.env.SERVER_BASE_URL}/users/${userID}/${verificationToken}`;
+  return `${process.env.SERVER_BASE_URL}/users/${userID}/verify/${verificationToken}`;
 }
 
 export default getVerificationLink;
