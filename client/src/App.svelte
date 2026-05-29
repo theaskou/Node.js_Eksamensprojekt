@@ -1,7 +1,7 @@
 <script>
-  import Checklist from "./lib/Checklist.svelte";
+  import Checklist from "./pages/Checklist.svelte";
   import CreateProfile from "./lib/CreateProfile.svelte";
-  import Lists from "./lib/Lists.svelte";
+  import Lists from "./pages/Lists.svelte";
   import LoginForm from "./lib/LoginForm.svelte";
   import SignUpForm from "./lib/SignUpForm.svelte";
   import { Router, Route } from "svelte-routing";

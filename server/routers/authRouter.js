@@ -11,9 +11,9 @@ const router = Router();
 
 router.get("/authcheck", authMiddleware, (req, res) => {
   const user = db
-    .prepare("SELECT user_id, email FROM users WHERE user_id = ?")
+    .prepare("SELECT user_id, email, color FROM users WHERE user_id = ?")
     .get(req.session.userID);
-  res.json({ userID: user.user_id, email: user.email });
+  res.json({ userID: user.user_id, email: user.email, color: user.color });
 });
 
 router.post("/login", rateLimiter, async (req, res) => {

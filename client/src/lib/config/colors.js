@@ -14,5 +14,6 @@ export const COLORS = [
 ];
 
 export function resolveColor(name) {
-  return COLORS.find((color) => color.name === name).value;
+  const color = COLORS.find((color) => color.name === name);
+  return color ? color.value : null;
 }

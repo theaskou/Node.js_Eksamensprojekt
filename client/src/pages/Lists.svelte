@@ -2,14 +2,16 @@
   import { onMount } from "svelte";
   import { fetchGet, fetchPost } from "../utils/fetchUtil";
   import { useLocation } from "svelte-routing";
-  import Avatar from "./Avatar.svelte";
-  import { resolveColor } from "./config/colors.js";
+  import Avatar from "../lib/Avatar.svelte";
+  import { resolveColor } from "../lib/config/colors.js";
   import { navigate } from "svelte-routing";
   import logoutHandler from "../utils/logoutUtil";
+  import { sortByDate } from "../utils/sortingUtil";
 
   let { user } = $props();
   let userData = $state(null);
-  let userLists = $state({});
+  let userLists = $state([]);
+  let sortedLists = $derived(sortByDate(userLists));
   let resolvedColor = $derived(resolveColor(userData?.color));
   let memberAvatars = $state({});
   let newListName = $state("");
@@ -35,6 +37,7 @@
     newListName = "";
     dialog.close();
   }
+
 </script>
 
 {#if userData}
@@ -49,14 +52,18 @@
   commandfor="create-list-dialog">Create list</button
 >
 <dialog id="create-list-dialog" bind:this={dialog}>
-  <input type="text" bind:value={newListName} placeholder="Name your new list…" />
+  <input
+    type="text"
+    bind:value={newListName}
+    placeholder="Name your new list…"
+  />
   <button onclick={clearCurrentItem}>Cancel</button>
   <button onclick={addHandler} disabled={isEmptyString}>Add</button>
 </dialog>
 
 <h1>Your lists:</h1>
 <ul>
-  {#each userLists as { listId, listName, members }}
+  {#each sortedLists as { listId, listName, members }}
     <li class="list">
       <button
         class="navigate-to-checklist-button"
