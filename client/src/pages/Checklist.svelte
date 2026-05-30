@@ -184,7 +184,10 @@
 
 <ul class="list">
   {#each $usersTyping as member}
-    <div>{member.userName} is typing...</div>
+    <div style="color: {resolveColor(member.color)}">
+      <Avatar avatar={member.avatar} color="none" size={30} />
+      {member.userName} is typing...
+    </div>
   {/each}
   {#each sortedItems as item}
     <li class="list-item">
