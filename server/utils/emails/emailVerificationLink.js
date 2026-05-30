@@ -7,10 +7,10 @@ function getRandomInt() {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function getVerificationLink(userID) {
+function getVerificationLink(userId) {
   const verificationToken = getRandomInt();
-  verificationTokens.set(userID, verificationToken);
-  return `${process.env.SERVER_BASE_URL}/users/${userID}/verify/${verificationToken}`;
+  verificationTokens.set(userId, verificationToken);
+  return `${process.env.SERVER_BASE_URL}/users/${userId}/verify/${verificationToken}`;
 }
 
 export default getVerificationLink;

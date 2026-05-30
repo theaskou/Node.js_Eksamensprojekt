@@ -12,8 +12,8 @@ const router = Router();
 router.get("/authcheck", authMiddleware, (req, res) => {
   const user = db
     .prepare("SELECT user_id, email, color FROM users WHERE user_id = ?")
-    .get(req.session.userID);
-  res.json({ userID: user.user_id, email: user.email, color: user.color });
+    .get(req.session.userId);
+  res.json({ userId: user.user_id, email: user.email, color: user.color });
 });
 
 router.post("/login", rateLimiter, async (req, res) => {
@@ -25,7 +25,7 @@ router.post("/login", rateLimiter, async (req, res) => {
       return res.status(401).json({ error: "Wrong credentials" });
     }
 
-    req.session.userID = authenticatedUser.user_id;
+    req.session.userId = authenticatedUser.user_id;
 
     res.send({ data: authenticatedUser.user_id });
   } catch (error) {
@@ -69,11 +69,11 @@ router.post("/users", rateLimiter, async (req, res) => {
       )
       .run(userName, email, hashedPwd, 0);
 
-    const userID = insert.lastInsertRowid;
+    const userId = insert.lastInsertRowid;
 
-    req.session.userID = userID;
+    req.session.userId = userId;
 
-    sendVerificationEmail(email, userName, userID);
+    sendVerificationEmail(email, userName, userId);
 
     // TODO: Handle "Remember to verify your email" notification?
     res.status(201).json({ message: "User created successfully" });
@@ -87,10 +87,10 @@ router.post("/users", rateLimiter, async (req, res) => {
 
 router.get("/users/:id/verify/:token", (req, res) => {
   try {
-    const userID = Number(req.params.id);
+    const userId = Number(req.params.id);
     const token = Number(req.params.token);
 
-    const expectedToken = verificationTokens.get(userID);
+    const expectedToken = verificationTokens.get(userId);
 
     if (!expectedToken || token !== expectedToken) {
       return res.status(400).json({ error: "Invalid token" });
@@ -98,13 +98,13 @@ router.get("/users/:id/verify/:token", (req, res) => {
 
     const result = db
       .prepare("UPDATE users SET verified = 1 WHERE user_id = ?")
-      .run(userID);
+      .run(userId);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    verificationTokens.delete(userID);
+    verificationTokens.delete(userId);
     res.status(200).json({ message: "Account verified successfully" });
   } catch (error) {
     console.error(error);

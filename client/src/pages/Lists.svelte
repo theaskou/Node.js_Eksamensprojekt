@@ -7,6 +7,7 @@
   import { navigate } from "svelte-routing";
   import logoutHandler from "../utils/logoutUtil";
   import { sortByDate } from "../utils/sortingUtil";
+  import { currentListMembers } from "../stores/listMembersStore.js";
 
   let { user } = $props();
   let userData = $state(null);
@@ -22,13 +23,13 @@
     const userDataResult = await fetchGet("/users/me");
     userData = userDataResult;
 
-    const listsResult = await fetchGet(`/users/${user.userID}/lists`);
+    const listsResult = await fetchGet(`/users/${user.userId}/lists`);
     userLists = listsResult.data;
   });
 
   async function addHandler() {
     await fetchPost(`/lists`, { listName: newListName });
-    const listsResult = await fetchGet(`/users/${user.userID}/lists`);
+    const listsResult = await fetchGet(`/users/${user.userId}/lists`);
     userLists = listsResult.data;
     clearCurrentItem();
   }
@@ -38,6 +39,14 @@
     dialog.close();
   }
 
+  function openList(list) {
+    currentListMembers.set({
+      listId: list.listId,
+      listName: list.listName,
+      members: list.members,
+    });
+    navigate(`/lists/${list.listId}`);
+  }
 </script>
 
 {#if userData}
@@ -67,7 +76,7 @@
     <li class="list">
       <button
         class="navigate-to-checklist-button"
-        onclick={() => navigate(`/lists/${listId}`)}
+        onclick={() => openList({ listId, listName, members })}
       >
         {listName}
         <div class="member-avatars">

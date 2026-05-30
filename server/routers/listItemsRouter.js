@@ -5,39 +5,44 @@ import listMemberMiddleware from "../middleware/listMemberMiddleware.js";
 
 const router = Router();
 
-router.get("/lists/:listId/items", authMiddleware, (req, res) => {
-  const listId = req.params.listId;
-  const getListItems = db
-    .prepare(
-      `
+router.get(
+  "/lists/:listId/items",
+  authMiddleware,
+  listMemberMiddleware,
+  (req, res) => {
+    const listId = req.params.listId;
+    const getListItems = db
+      .prepare(
+        `
         SELECT list_items.*, users.color AS checked_by_color
         FROM list_items
         LEFT JOIN users ON list_items.checked_by = users.user_id
         WHERE list_items.list_id = ?`,
-    )
-    .all(listId);
+      )
+      .all(listId);
 
-  const getListName = db
-    .prepare(`SELECT list_name from lists WHERE list_id = ?`)
-    .get(listId);
+    const getListName = db
+      .prepare(`SELECT list_name from lists WHERE list_id = ?`)
+      .get(listId);
 
-  const listItems = [];
-  const listName = getListName.list_name;
+    const listItems = [];
+    const listName = getListName.list_name;
 
-  for (const listItem of getListItems) {
-    listItems.push({
-      itemID: listItem.item_id,
-      itemName: listItem.item_name,
-      addedBy: listItem.added_by,
-      createdAt: listItem.created_at,
-      checked: listItem.checked,
-      checkedBy: listItem.checked_by,
-      checkedByColor: listItem.checked_by_color,
-    });
-  }
+    for (const listItem of getListItems) {
+      listItems.push({
+        itemID: listItem.item_id,
+        itemName: listItem.item_name,
+        addedBy: listItem.added_by,
+        createdAt: listItem.created_at,
+        checked: listItem.checked,
+        checkedBy: listItem.checked_by,
+        checkedByColor: listItem.checked_by_color,
+      });
+    }
 
-  res.json({ listName, listItems });
-});
+    res.json({ listName, listItems });
+  },
+);
 
 router.post(
   "/lists/:listId/listitems",
@@ -46,7 +51,7 @@ router.post(
   (req, res) => {
     const { itemName } = req.body;
     const listId = req.params.listId;
-    const userId = req.session.userID;
+    const userId = req.session.userId;
 
     const addListItem = db
       .prepare(
@@ -93,7 +98,7 @@ router.put(
   (req, res) => {
     const { checked } = req.body;
     const { listId, itemId } = req.params;
-    const userId = req.session.userID;
+    const userId = req.session.userId;
 
     const result = db
       .prepare(

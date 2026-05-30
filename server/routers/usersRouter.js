@@ -9,9 +9,9 @@ router.get("/users/me", authMiddleware, (req, res) => {
     .prepare(
       "SELECT user_id, user_name, avatar, color FROM users WHERE user_id = ?",
     )
-    .get(req.session.userID);
+    .get(req.session.userId);
   res.json({
-    userID: user.user_id,
+    userId: user.user_id,
     userName: user.user_name,
     avatar: user.avatar,
     color: user.color,

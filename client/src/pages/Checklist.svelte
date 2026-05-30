@@ -1,13 +1,20 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import {
     fetchGet,
     fetchPost,
     fetchPut,
     fetchDelete,
   } from "../utils/fetchUtil";
+  import { SERVER_BASE_URL } from "../stores/generalStore";
   import { sortByDate } from "../utils/sortingUtil.js";
+  import Avatar from "../lib/Avatar.svelte";
   import { resolveColor } from "../lib/config/colors.js";
+  import { currentListMembers } from "../stores/listMembersStore.js";
+  import io from "socket.io-client";
+  import { writable } from "svelte/store";
+
+  let socket;
 
   // Online users, users typing...
 
@@ -23,12 +30,55 @@
   let isEmptyString = $derived(
     currentItemText === null || currentItemText === "",
   );
+  const onlineMemberIds = writable([]);
 
-  onMount(async () => {
+  async function fetchListItems() {
     const result = await fetchGet(`/lists/${listId}/items`);
     listItems = result.listItems;
     listName = result.listName;
+  }
+
+  onMount(async () => {
+    fetchListItems();
+
+    if (!$currentListMembers) {
+      const result = await fetchGet(`/lists/${listId}/members`);
+      currentListMembers.set({
+        listId: result.listId,
+        listName: result.listName,
+        members: result.members,
+      });
+    }
+
+    socket = io($SERVER_BASE_URL, {
+      auth: {
+        userId: user.userId,
+      },
+      withCredentials: true,
+    });
+
+    socket.on("user-connected", ({ userId }) => {
+      onlineMemberIds.set([userId, ...$onlineMemberIds]);
+    });
+
+    socket.on("user-list", (onlineUsers) => {
+      onlineMemberIds.set([user.userId, ...onlineUsers]);
+    });
+
+    socket.on("checklist-updated", () => {
+      fetchListItems();
+    });
+
+    socket.on("user-disconnected", ({ userId }) => {
+      onlineMemberIds.set($onlineMemberIds.filter((id) => id !== userId));
+    });
   });
+
+  onDestroy(() => {
+    socket.disconnect();
+  });
+
+  function isOnline(memberId) {}
 
   async function addHandler() {
     await fetchPost(`/lists/${listId}/listitems`, {
@@ -37,6 +87,7 @@
 
     const result = await fetchGet(`/lists/${listId}/items`);
     listItems = result.listItems;
+    socket.emit("checklist-updated");
     clearCurrentItem();
   }
 
@@ -58,6 +109,7 @@
 
     const item = listItems.find((i) => i.itemID === currentItemIndex);
     item.itemName = currentItemText;
+    socket.emit("checklist-updated");
     clearCurrentItem();
   }
 
@@ -65,6 +117,7 @@
     await fetchDelete(`/lists/${listId}/listitems/${currentItemIndex}`);
     const index = listItems.findIndex((i) => i.itemID === currentItemIndex);
     listItems.splice(index, 1);
+    socket.emit("checklist-updated");
     clearCurrentItem();
   }
 
@@ -78,8 +131,32 @@
     currentItem.checkedByColor = !item.checked
       ? resolveColor(user.color)
       : null;
+    socket.emit("checklist-updated");
   }
 </script>
+
+<div class="members-list-container">
+  <ul class="members-list">
+    {#if $currentListMembers && $onlineMemberIds}
+      {#each $currentListMembers.members as member}
+        <li style="color: {resolveColor(member.color)}">
+          {member.userName}
+          {#if $onlineMemberIds.includes(member.memberId)}
+            <div
+              class="online-symbol"
+              style="background-color: green; border-radius: 50%; width: 6px; height: 6px;"
+            ></div>
+          {/if}
+          <Avatar
+            avatar={member.avatar}
+            color={resolveColor(member.color)}
+            size={30}
+          />
+        </li>
+      {/each}
+    {/if}
+  </ul>
+</div>
 
 <h1 class="list-name">{listName}</h1>
 
@@ -156,9 +233,5 @@
     position: fixed;
     width: 50px;
     height: 50px;
-  }
-
-  input[type="checkbox"] {
-    accent-color: unset;
   }
 </style>

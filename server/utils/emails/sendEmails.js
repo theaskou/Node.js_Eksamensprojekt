@@ -13,8 +13,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendVerificationEmail(emailAddress, userName, userID) {
-  const verificationLink = getVerificationLink(userID);
+async function sendVerificationEmail(emailAddress, userName, userId) {
+  const verificationLink = getVerificationLink(userId);
 
   const info = await transporter.sendMail({
     from: '"The Website" <website-email@example.com>',

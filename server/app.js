@@ -33,6 +33,37 @@ app.use(
 import helmet from "helmet";
 app.use(helmet());
 
+import http from "http";
+const server = http.createServer(app);
+
+import { Server } from "socket.io";
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  },
+});
+
+const activeUsers = new Map();
+
+io.on("connection", (socket) => {
+  const { userId } = socket.handshake.auth;
+  activeUsers.set(socket.id, userId);
+
+  socket.broadcast.emit("user-connected", { userId });
+
+  socket.emit("user-list", [...activeUsers.values()]);
+
+  socket.on("disconnect", () => {
+    activeUsers.delete(socket.id);
+    io.emit("user-disconnected", { userId });
+  });
+
+  socket.on("checklist-updated", () => {
+    socket.broadcast.emit("checklist-updated")
+  })
+});
+
 import authRouter from "./routers/authRouter.js";
 app.use(authRouter);
 
@@ -47,4 +78,4 @@ app.use(listItemsRouter);
 
 const PORT = process.env.PORT ?? 8080;
 
-app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));
+server.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));
