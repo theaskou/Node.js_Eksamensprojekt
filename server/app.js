@@ -57,11 +57,22 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     activeUsers.delete(socket.id);
     io.emit("user-disconnected", { userId });
+    socket.broadcast.emit("user-stopped-typing", { userId });
   });
 
   socket.on("checklist-updated", () => {
-    socket.broadcast.emit("checklist-updated")
-  })
+    socket.broadcast.emit("checklist-updated");
+  });
+
+  socket.on("user-is-typing", () => {
+    socket.broadcast.emit("user-is-typing", { userId });
+  });
+
+  socket.on("user-stopped-typing", () => {
+    console.log("server received user-stopped-typing from", userId);
+
+    socket.broadcast.emit("user-stopped-typing", { userId });
+  });
 });
 
 import authRouter from "./routers/authRouter.js";

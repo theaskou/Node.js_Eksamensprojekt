@@ -14,10 +14,6 @@
   import io from "socket.io-client";
   import { writable } from "svelte/store";
 
-  let socket;
-
-  // Online users, users typing...
-
   // Back to lists view
 
   let { user, listId } = $props();
@@ -30,7 +26,9 @@
   let isEmptyString = $derived(
     currentItemText === null || currentItemText === "",
   );
+  let socket;
   const onlineMemberIds = writable([]);
+  const usersTyping = writable([]);
 
   async function fetchListItems() {
     const result = await fetchGet(`/lists/${listId}/items`);
@@ -69,6 +67,19 @@
       fetchListItems();
     });
 
+    socket.on("user-is-typing", ({ userId }) => {
+      const member = $currentListMembers?.members.find(
+        (m) => m.memberId === userId,
+      );
+      if (member) usersTyping.update((members) => [member, ...members]);
+    });
+
+    socket.on("user-stopped-typing", ({ userId }) => {
+      usersTyping.update((members) =>
+        members.filter((m) => m.memberId !== userId),
+      );
+    });
+
     socket.on("user-disconnected", ({ userId }) => {
       onlineMemberIds.set($onlineMemberIds.filter((id) => id !== userId));
     });
@@ -78,7 +89,10 @@
     socket.disconnect();
   });
 
-  function isOnline(memberId) {}
+  function openAddDialog() {
+    dialog.showModal();
+    socket.emit("user-is-typing");
+  }
 
   async function addHandler() {
     await fetchPost(`/lists/${listId}/listitems`, {
@@ -88,18 +102,21 @@
     const result = await fetchGet(`/lists/${listId}/items`);
     listItems = result.listItems;
     socket.emit("checklist-updated");
+    socket.emit("user-is-typing");
     clearCurrentItem();
   }
 
   function clearCurrentItem() {
     currentItemText = null;
     currentItemIndex = null;
+    socket.emit("user-stopped-typing");
     dialog.close();
   }
 
   function editHandler(item) {
     currentItemText = item.itemName;
     currentItemIndex = item.itemID;
+    socket.emit("user-is-typing");
   }
 
   async function saveHandler() {
@@ -133,13 +150,18 @@
       : null;
     socket.emit("checklist-updated");
   }
+
+  function findMemberByUserId(userId) {
+    const member = $currentListMembers.members.find((m) => m.userId === userId);
+    return member;
+  }
 </script>
 
 <div class="members-list-container">
   <ul class="members-list">
     {#if $currentListMembers && $onlineMemberIds}
       {#each $currentListMembers.members as member}
-        <li style="color: {resolveColor(member.color)}">
+        <li>
           {member.userName}
           {#if $onlineMemberIds.includes(member.memberId)}
             <div
@@ -161,6 +183,9 @@
 <h1 class="list-name">{listName}</h1>
 
 <ul class="list">
+  {#each $usersTyping as member}
+    <div>{member.userName} is typing...</div>
+  {/each}
   {#each sortedItems as item}
     <li class="list-item">
       <label>
@@ -185,9 +210,7 @@
   {/each}
 </ul>
 
-<button class="add-button" command="show-modal" commandfor="add-item-dialog"
-  >+</button
->
+<button class="add-button" onclick={openAddDialog}>+</button>
 
 <dialog id="add-item-dialog" bind:this={dialog}>
   <input type="text" bind:value={currentItemText} placeholder="…" />
