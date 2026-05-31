@@ -98,7 +98,6 @@
     await fetchPost(`/lists/${listId}/listitems`, {
       itemName: currentItemText,
     });
-
     const result = await fetchGet(`/lists/${listId}/items`);
     listItems = result.listItems;
     socket.emit("checklist-updated");
@@ -123,7 +122,6 @@
     await fetchPut(`/lists/${listId}/listitems/${currentItemIndex}`, {
       itemName: currentItemText,
     });
-
     const item = listItems.find((i) => i.itemID === currentItemIndex);
     item.itemName = currentItemText;
     socket.emit("checklist-updated");
@@ -149,11 +147,6 @@
       ? resolveColor(user.color)
       : null;
     socket.emit("checklist-updated");
-  }
-
-  function findMemberByUserId(userId) {
-    const member = $currentListMembers.members.find((m) => m.userId === userId);
-    return member;
   }
 </script>
 
