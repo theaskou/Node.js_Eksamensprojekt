@@ -1,41 +1,29 @@
-<!-- <script>
-  const colors = [
-    { name: "turquoise", value: "#1ABC9C" },
-    { name: "light-blue", value: "#a2f4fd" },
-    { name: "blue", value: "#3498DB" },
-    { name: "purple", value: "#9B59B6" },
-    { name: "dark-green", value: "#008A00" },
-    { name: "green", value: "#27AE60" },
-    { name: "cobalt", value: "#0050EF" },
-    { name: "lime", value: "#7ccf00" },
-    { name: "yellow", value: "#F1C40F" },
-    { name: "orange", value: "#E67E22" },
-    { name: "red", value: "#E74C3C" },
-    { name: "dark-red", value: "#C0392B" },
-  ];
-  let selectedColor = null;
+<script>
+  import { toast } from "@zerodevx/svelte-toast";
+  import Button from "../lib/Button.svelte";
+  import { fetchPost, fetchPut } from "../utils/fetchUtil";
+  import { navigate } from "svelte-routing";
 
-  const avatars = [
-    { name: "blackbird", src: "/avatars/blackbird.png" },
-    { name: "crow", src: "/avatars/crow.png" },
-    { name: "duck", src: "/avatars/duck.png" },
-    { name: "hummingbird", src: "/avatars/hummingbird.png" },
-    { name: "kiwi", src: "/avatars/kiwi.png" },
-    { name: "mallard", src: "/avatars/mallard.png" },
-    { name: "robin", src: "/avatars/robin.png" },
-    { name: "oriole", src: "/avatars/oriole.png" },
-    { name: "sparrow", src: "/avatars/sparrow.png" },
-    { name: "stork", src: "/avatars/stork.png" },
-    { name: "tit", src: "/avatars/tit.png" },
-    { name: "white-owl", src: "/avatars/white-owl.png" },
-  ];
-  let selectedAvatar = null;
+  let { user } = $props();
+  let selectedAvatar = $state();
+  let selectedColor = $state();
+
+  async function saveHandler() {
+    if (!selectedAvatar || !selectedColor) {
+      toast.push("Please select a color and an avatar")
+      return;
+    }
+    const result = await fetchPut(`/users/${user.userId}`, selectedAvatar, selectedColor);
+    navigate
+  }
+
+
 </script>
 
 <div class="container">
   <div>
     <div class="headlines">
-      <h1>Hi [**name**]!</h1>
+      <h1>Hi {user.userName}!</h1>
 
       <h2>Pick a color and an avatar to get started:</h2>
     </div>
@@ -77,10 +65,10 @@
     </div>
   </div>
 
-  <button class="save-button">Save</button>
+  <Button onclick={saveHandler}>Save</Button>
 </div>
 
-<style>
+<!-- <style>
   .container {
     min-height: 100vh;
     display: flex;

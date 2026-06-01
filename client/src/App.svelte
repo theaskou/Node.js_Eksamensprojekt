@@ -1,6 +1,6 @@
 <script>
   import Checklist from "./pages/Checklist.svelte";
-  import CreateProfile from "./lib/CreateProfile.svelte";
+  import CreateProfile from "./pages/CreateProfile.svelte";
   import Lists from "./pages/Lists.svelte";
   import LoginForm from "./lib/LoginForm.svelte";
   import SignUpForm from "./lib/SignUpForm.svelte";
@@ -14,7 +14,7 @@
 <SvelteToast />
 
 <Router>
-  <main class="container">
+  <main class="m-4 max-w-[375px] relative">
     <Route path="/">
       <div class="auth-forms">
         <fieldset class="auth-switcher">
@@ -56,17 +56,3 @@
     </Route>
   </main>
 </Router>
-
-<style>
-  .container {
-    margin: 2rem;
-  }
-
-  .auth-forms {
-    max-width: 600px;
-  }
-
-  .auth-switcher {
-    display: flex;
-  }
-</style>

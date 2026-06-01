@@ -8,6 +8,8 @@
   import logoutHandler from "../utils/logoutUtil";
   import { sortByDate } from "../utils/sortingUtil";
   import { currentListMembers } from "../stores/listMembersStore.js";
+  import Button from "../lib/Button.svelte";
+  import CreateListDialog from "../lib/CreateListDialog.svelte";
 
   let { user } = $props();
   let userData = $state(null);
@@ -50,17 +52,32 @@
 </script>
 
 {#if userData}
-  <Avatar avatar={userData.avatar} color={resolvedColor} />
-  <div>Signed in as {userData.userName}</div>
-  <button class="log-out-button" onclick={logoutHandler}>Log out</button>
+  <div class="flex gap-4 items-center">
+    <Avatar avatar={userData.avatar} color={resolvedColor} />
+    <div>
+      <div class="text-xs text-stone-500">Signed in as</div>
+      <div>{userData.userName}</div>
+    </div>
+    <!-- <button class="log-out-button" onclick={logoutHandler}>Log out</button> -->
+  </div>
 {/if}
 
-<button
-  class="create-list-button"
-  command="show-modal"
-  commandfor="create-list-dialog">Create list</button
->
-<dialog id="create-list-dialog" bind:this={dialog}>
+<div class="flex justify-between items-center mt-6 mb-8">
+  <h1 class="font-semibold text-2xl">Your lists:</h1>
+  <Button command="show-modal" commandfor="create-list-dialog"
+    >Create List</Button
+  >
+</div>
+
+<CreateListDialog
+  bind:dialog
+  bind:value={newListName}
+  cancel={clearCurrentItem}
+  add={addHandler}
+/>
+
+
+<!-- <dialog id="create-list-dialog" bind:this={dialog}>
   <input
     type="text"
     bind:value={newListName}
@@ -68,18 +85,17 @@
   />
   <button onclick={clearCurrentItem}>Cancel</button>
   <button onclick={addHandler} disabled={isEmptyString}>Add</button>
-</dialog>
+</dialog> -->
 
-<h1>Your lists:</h1>
-<ul>
+<ul class="flex flex-col gap-3">
   {#each sortedLists as { listId, listName, members }}
     <li class="list">
       <button
-        class="navigate-to-checklist-button"
+        class="bg-stone-100 flex w-full justify-between p-4 rounded-xl font-semibold"
         onclick={() => openList({ listId, listName, members })}
       >
         {listName}
-        <div class="member-avatars">
+        <div class="flex gap-1">
           {#each members as member}
             <Avatar
               avatar={member.avatar}

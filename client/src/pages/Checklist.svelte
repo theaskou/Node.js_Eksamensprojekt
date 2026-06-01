@@ -13,6 +13,7 @@
   import { currentListMembers } from "../stores/listMembersStore.js";
   import io from "socket.io-client";
   import { writable } from "svelte/store";
+  import Button from "../lib/Button.svelte";
 
   // Back to lists view
 
@@ -151,31 +152,33 @@
 </script>
 
 <div class="members-list-container">
-  <ul class="members-list">
+  <ul class="flex gap-5">
     {#if $currentListMembers && $onlineMemberIds}
       {#each $currentListMembers.members as member}
         <li>
-          {member.userName}
-          {#if $onlineMemberIds.includes(member.memberId)}
-            <div
-              class="online-symbol"
-              style="background-color: green; border-radius: 50%; width: 6px; height: 6px;"
-            ></div>
-          {/if}
           <Avatar
             avatar={member.avatar}
             color={resolveColor(member.color)}
-            size={30}
+            size={40}
           />
+          <div class="flex">
+            {member.userName}
+            {#if $onlineMemberIds.includes(member.memberId)}
+              <div
+                class=""
+                style="background-color: green; border-radius: 50%; width: 6px; height: 6px;"
+              ></div>
+            {/if}
+          </div>
         </li>
       {/each}
     {/if}
   </ul>
 </div>
 
-<h1 class="list-name">{listName}</h1>
+<h1 class="font-semibold text-2xl mt-4 mb-4">{listName}</h1>
 
-<ul class="list">
+<ul class="flex flex-col justify-between gap-2 pb-20">
   {#each $usersTyping as member}
     <div style="color: {resolveColor(member.color)}">
       <Avatar avatar={member.avatar} color="none" size={30} />
@@ -183,30 +186,39 @@
     </div>
   {/each}
   {#each sortedItems as item}
-    <li class="list-item">
+    <li class="border-b border-stone-300">
       <label>
-        <div>
-          <input
-            type="checkbox"
-            checked={item.checked}
-            onchange={() => checkHandler(item)}
-            style="accent-color: {resolveColor(item.checkedByColor) ??
-              resolveColor(user.color)}"
-          />
-          {item.itemName}
+        <div class="flex justify-between">
+          <div class="flex">
+            <input
+              type="checkbox"
+              checked={item.checked}
+              onchange={() => checkHandler(item)}
+              style="accent-color: {resolveColor(item.checkedByColor) ??
+                resolveColor(user.color)}"
+            />
+            <div
+              class="ml-5 font-semibold {item.checked
+                ? 'line-through text-stone-400'
+                : ''}"
+            >
+              {item.itemName}
+            </div>
+          </div>
+          <button
+            class="flex"
+            onclick={() => editHandler(item)}
+            command="show-modal"
+            commandfor="add-item-dialog">✏️</button
+          >
         </div>
-        <button
-          class="edit-button"
-          onclick={() => editHandler(item)}
-          command="show-modal"
-          commandfor="add-item-dialog">✏️</button
-        >
       </label>
     </li>
   {/each}
 </ul>
-
-<button class="add-button" onclick={openAddDialog}>+</button>
+<div class="fixed left-[calc(50%-24px)] bottom-4">
+  <Button onclick={openAddDialog}>+</Button>
+</div>
 
 <dialog id="add-item-dialog" bind:this={dialog}>
   <input type="text" bind:value={currentItemText} placeholder="…" />
@@ -218,39 +230,3 @@
     <button onclick={addHandler} disabled={isEmptyString}>Add</button>
   {/if}
 </dialog>
-
-<style>
-  .edit-button {
-    background-color: transparent;
-    border: none;
-  }
-
-  .list-name {
-    margin: 12px;
-  }
-
-  .list {
-    padding: 0;
-    margin-bottom: 74px;
-  }
-
-  .list-item {
-    list-style: none;
-    padding-left: 12px;
-  }
-
-  .list-item > label {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .add-button {
-    bottom: 12px;
-    right: 12px;
-    position: fixed;
-    width: 50px;
-    height: 50px;
-  }
-</style>

@@ -14,9 +14,11 @@
     "vite": "^8.0.10"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
     "@zerodevx/svelte-toast": "^0.9.6",
     "dotenv": "^17.4.2",
     "socket.io-client": "^4.8.3",
-    "svelte-routing": "^2.13.0"
+    "svelte-routing": "^2.13.0",
+    "tailwindcss": "^4.3.0"
   }
 }

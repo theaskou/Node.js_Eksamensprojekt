@@ -8,8 +8,7 @@
   let pwd = "";
   let repeatedPwd = "";
 
-  async function handleSignUp(event) {
-    event.preventDefault();
+  async function handleSignUp() {
 
     const response = await fetchPost("/users", {
       userName,
@@ -29,13 +28,13 @@
 
 <form id="sign-up-form" on:submit={handleSignUp}>
   <label>
-    Username:
+    Name:
     <input
       type="text"
       bind:value={userName}
       id="user-name"
       required
-      placeholder="Your username…"
+      placeholder="Your name…"
     />
   </label>
   <label>
