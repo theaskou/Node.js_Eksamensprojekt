@@ -69,7 +69,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("user-stopped-typing", () => {
-    console.log("server received user-stopped-typing from", userId);
 
     socket.broadcast.emit("user-stopped-typing", { userId });
   });

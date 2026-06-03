@@ -9,7 +9,7 @@
   import { sortByDate } from "../utils/sortingUtil";
   import { currentListMembers } from "../stores/listMembersStore.js";
   import Button from "../lib/Button.svelte";
-  import CreateListDialog from "../lib/CreateListDialog.svelte";
+  import SecondaryButton from "../lib/SecondaryButton.svelte";
 
   let { user } = $props();
   let userData = $state(null);
@@ -58,8 +58,8 @@
       <div class="text-xs text-stone-500">Signed in as</div>
       <div>{userData.userName}</div>
     </div>
-    <!-- <button class="log-out-button" onclick={logoutHandler}>Log out</button> -->
   </div>
+  <button class="flex items-end" onclick={logoutHandler}>Log out</button>
 {/if}
 
 <div class="flex justify-between items-center mt-6 mb-8">
@@ -69,23 +69,22 @@
   >
 </div>
 
-<CreateListDialog
-  bind:dialog
-  bind:value={newListName}
-  cancel={clearCurrentItem}
-  add={addHandler}
-/>
-
-
-<!-- <dialog id="create-list-dialog" bind:this={dialog}>
+<dialog
+  id="create-list-dialog"
+  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  bind:this={dialog}
+>
   <input
     type="text"
+    class="text-2xl w-full"
     bind:value={newListName}
     placeholder="Name your new list…"
   />
-  <button onclick={clearCurrentItem}>Cancel</button>
-  <button onclick={addHandler} disabled={isEmptyString}>Add</button>
-</dialog> -->
+    <div class="mt-4 flex justify-between">
+  <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
+  <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>
+  </div>
+</dialog>
 
 <ul class="flex flex-col gap-3">
   {#each sortedLists as { listId, listName, members }}

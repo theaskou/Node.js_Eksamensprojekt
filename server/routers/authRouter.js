@@ -39,9 +39,9 @@ router.post("/logout", (req, res) => {
 
 router.post("/users", rateLimiter, async (req, res) => {
   try {
-    const { userName, email, pwd, repeatedPwd } = req.body;
+    const { name, email, pwd, repeatedPwd, selectedAvatar, selectedColor } = req.body;
 
-    if (!userName || !email || !pwd || !repeatedPwd) {
+    if (!name || !email || !pwd || !repeatedPwd) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -62,18 +62,21 @@ router.post("/users", rateLimiter, async (req, res) => {
 
     const hashedPwd = await pwdHashing(pwd);
 
-    // TODO: Handle avatar placeholder?
+    if (!selectedAvatar || !selectedColor) {
+      return res.status(400).json({ error: "Please select color and avatar" });
+    }
+
     const insert = db
       .prepare(
-        "INSERT INTO users (user_name, email, pwd, verified) VALUES (?, ?, ?, ?)",
+        "INSERT INTO users (user_name, email, pwd, avatar, color) VALUES (?, ?, ?, ?, ?)",
       )
-      .run(userName, email, hashedPwd, 0);
+      .run(name, email, hashedPwd, selectedAvatar, selectedColor);
 
     const userId = insert.lastInsertRowid;
 
     req.session.userId = userId;
 
-    sendVerificationEmail(email, userName, userId);
+    sendVerificationEmail(email, name, userId);
 
     // TODO: Handle "Remember to verify your email" notification?
     res.status(201).json({ message: "User created successfully" });

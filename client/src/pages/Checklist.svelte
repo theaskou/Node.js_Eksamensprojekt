@@ -6,7 +6,6 @@
     fetchPut,
     fetchDelete,
   } from "../utils/fetchUtil";
-  import { SERVER_BASE_URL } from "../stores/generalStore";
   import { sortByDate } from "../utils/sortingUtil.js";
   import Avatar from "../lib/Avatar.svelte";
   import { resolveColor } from "../lib/config/colors.js";
@@ -14,6 +13,9 @@
   import io from "socket.io-client";
   import { writable } from "svelte/store";
   import Button from "../lib/Button.svelte";
+  import SecondaryButton from "../lib/SecondaryButton.svelte";
+  import DeleteButton from "../lib/DeleteButton.svelte";
+  const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
   // Back to lists view
 
@@ -49,7 +51,7 @@
       });
     }
 
-    socket = io($SERVER_BASE_URL, {
+    socket = io(SERVER_BASE_URL, {
       auth: {
         userId: user.userId,
       },
@@ -209,7 +211,7 @@
             class="flex"
             onclick={() => editHandler(item)}
             command="show-modal"
-            commandfor="add-item-dialog">✏️</button
+            commandfor="add-edit-item-dialog">✏️</button
           >
         </div>
       </label>
@@ -220,13 +222,19 @@
   <Button onclick={openAddDialog}>+</Button>
 </div>
 
-<dialog id="add-item-dialog" bind:this={dialog}>
-  <input type="text" bind:value={currentItemText} placeholder="…" />
-  <button onclick={clearCurrentItem}>Cancel</button>
-  {#if currentItemIndex !== null}
-    <button onclick={() => deleteHandler()}>Delete</button>
-    <button onclick={saveHandler} disabled={isEmptyString}>Save</button>
-  {:else}
-    <button onclick={addHandler} disabled={isEmptyString}>Add</button>
-  {/if}
+<dialog
+  id="add-edit-item-dialog"
+  bind:this={dialog}
+  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+>
+  <input type="text" class="text-2xl w-full" bind:value={currentItemText} placeholder="…" />
+  <div class="mt-4 flex justify-between">
+    <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
+    {#if currentItemIndex !== null}
+      <DeleteButton onclick={() => deleteHandler()}>Delete</DeleteButton>
+      <Button onclick={saveHandler} disabled={isEmptyString}>Save</Button>
+    {:else}
+      <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>
+    {/if}
+  </div>
 </dialog>

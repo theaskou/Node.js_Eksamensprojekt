@@ -3,7 +3,7 @@
 </script>
 
 <button
-  class="bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold min-w-12 disabled:op"
+  class="bg-blue-100 text-red-700 px-4 py-3 rounded-xl font-semibold min-w-12 disabled:op"
   {disabled}
   {command}
   {commandfor}

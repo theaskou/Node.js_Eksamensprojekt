@@ -1,31 +1,17 @@
 <script>
-  import { toast } from "@zerodevx/svelte-toast";
-  import Button from "../lib/Button.svelte";
-  import { fetchPost, fetchPut } from "../utils/fetchUtil";
-  import { navigate } from "svelte-routing";
+  import { COLORS as colors } from "./config/colors.js";
+  import { AVATARS as avatars } from "./config/avatars.js";
 
-  let { user } = $props();
-  let selectedAvatar = $state();
-  let selectedColor = $state();
-
-  async function saveHandler() {
-    if (!selectedAvatar || !selectedColor) {
-      toast.push("Please select a color and an avatar")
-      return;
-    }
-    const result = await fetchPut(`/users/${user.userId}`, selectedAvatar, selectedColor);
-    navigate
-  }
-
-
+  let { setColor, setAvatar } = $props();
+  let selectedAvatar = $state("");
+  let selectedColor = $state("");
+  
 </script>
 
 <div class="container">
   <div>
     <div class="headlines">
-      <h1>Hi {user.userName}!</h1>
-
-      <h2>Pick a color and an avatar to get started:</h2>
+      <h2>Pick a color and an avatar</h2>
     </div>
 
     <div class="profile-avatar-creator">
@@ -37,9 +23,10 @@
             style="background-color: {color.value}"
             onclick={() => {
               selectedColor = color;
+              setColor(color.name);
             }}
           >
-            {#if selectedColor === color}
+            {#if selectedColor.name === color.name}
               ✔
             {/if}
           </button>
@@ -49,13 +36,15 @@
       <div class="avatar-picker">
         {#each avatars as avatar}
           <button
-            class="avatar-option"
+            class="disabled:opacity-20 avatar-option transition-opacity"
             disabled={!selectedColor}
-            style="background-color: {selectedAvatar === avatar && selectedColor
+            style="background-color: {selectedAvatar.name === avatar.name &&
+            selectedColor
               ? selectedColor.value
               : 'transparent'}"
             onclick={() => {
               selectedAvatar = avatar;
+              setAvatar(avatar.name);
             }}
           >
             <img src={avatar.src} alt={avatar.name} />
@@ -64,13 +53,10 @@
       </div>
     </div>
   </div>
-
-  <Button onclick={saveHandler}>Save</Button>
 </div>
 
-<!-- <style>
+<style>
   .container {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -106,7 +92,6 @@
   }
 
   .avatar-option {
-    background: aliceblue;
     border: none;
     border-radius: 50%;
     width: 80px;
@@ -122,4 +107,4 @@
   .save-button {
     align-self: center;
   }
-</style> -->
+</style>

@@ -13,18 +13,22 @@ export async function fetchGet(endpoint) {
 }
 
 export async function fetchPost(endpoint, body) {
-  const response = await fetch(
-    `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
-    {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    },
-  );
-  return await response.json();
+    );
+    return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchPut(endpoint, body) {

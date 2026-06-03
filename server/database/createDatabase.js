@@ -53,4 +53,21 @@ db.exec(`
     );
 `);
 
+db.prepare(`INSERT INTO users VALUES (?, ?, ?, ?, ?)`)
+
+INSERT INTO users (
+    user_id,
+    user_name,
+    email,
+    pwd,
+    verified
+)
+VALUES (
+    1,
+    'Deleted User',
+    'deleted@system.local',
+    '',
+    1
+);
+
 seedDatabase();

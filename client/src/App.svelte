@@ -1,12 +1,13 @@
 <script>
   import Checklist from "./pages/Checklist.svelte";
-  import CreateProfile from "./pages/CreateProfile.svelte";
+  import CreateProfile from "./lib/AvatarPicker.svelte";
   import Lists from "./pages/Lists.svelte";
-  import LoginForm from "./lib/LoginForm.svelte";
-  import SignUpForm from "./lib/SignUpForm.svelte";
+  import LoginForm from "./pages/LoginForm.svelte";
+  import SignUpForm from "./pages/SignUpForm.svelte";
   import { Router, Route } from "svelte-routing";
   import ProtectedRoute from "./lib/ProtectedRoute.svelte";
   import { SvelteToast } from "@zerodevx/svelte-toast";
+  import EmailVerified from "./pages/EmailVerified.svelte";
 
   let displaySignUp = $state(true);
 </script>
@@ -53,6 +54,9 @@
       <ProtectedRoute let:user>
         <Checklist {user} listId={params.id} />
       </ProtectedRoute>
+    </Route>
+    <Route path="/verify">
+        <EmailVerified />
     </Route>
   </main>
 </Router>
