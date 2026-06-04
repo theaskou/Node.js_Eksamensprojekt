@@ -35,6 +35,7 @@ db.exec(`
     PRIMARY KEY (user_id, list_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (list_id) REFERENCES lists(list_id)
+    ON DELETE CASCADE
     );
 `);
 
@@ -50,24 +51,8 @@ db.exec(`
     FOREIGN KEY (list_id) REFERENCES lists(list_id),
     FOREIGN KEY (added_by) REFERENCES users(user_id),
     FOREIGN KEY (checked_by) REFERENCES users(user_id)
+    ON DELETE CASCADE
     );
 `);
-
-db.prepare(`INSERT INTO users VALUES (?, ?, ?, ?, ?)`)
-
-INSERT INTO users (
-    user_id,
-    user_name,
-    email,
-    pwd,
-    verified
-)
-VALUES (
-    1,
-    'Deleted User',
-    'deleted@system.local',
-    '',
-    1
-);
 
 seedDatabase();

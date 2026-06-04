@@ -2,6 +2,7 @@
   import { fetchPost } from "../utils/fetchUtil.js";
   import { navigate } from "svelte-routing";
   import { toast } from "@zerodevx/svelte-toast";
+  import Button from "../lib/Button.svelte";
 
   let email = "";
   let password = "";
@@ -41,5 +42,5 @@
     />
   </label>
 
-  <button id="log-in-button">Log in</button>
+<Button>Log in</Button>
 </form>

@@ -15,6 +15,8 @@
   import Button from "../lib/Button.svelte";
   import SecondaryButton from "../lib/SecondaryButton.svelte";
   import DeleteButton from "../lib/DeleteButton.svelte";
+  import logoutHandler from "../utils/logoutUtil";
+  import { navigate } from "svelte-routing";
   const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
   // Back to lists view
@@ -23,7 +25,9 @@
   let listItems = $state([]);
   let sortedItems = $derived(sortByDate(listItems));
   let listName = $state("");
-  let dialog;
+  let itemDialog;
+  let deleteDialog;
+  let showMenu = $state(false);
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
   let isEmptyString = $derived(
@@ -93,7 +97,7 @@
   });
 
   function openAddDialog() {
-    dialog.showModal();
+    itemDialog.showModal();
     socket.emit("user-is-typing");
   }
 
@@ -112,7 +116,7 @@
     currentItemText = null;
     currentItemIndex = null;
     socket.emit("user-stopped-typing");
-    dialog.close();
+    itemDialog.close();
   }
 
   function editHandler(item) {
@@ -131,7 +135,7 @@
     clearCurrentItem();
   }
 
-  async function deleteHandler() {
+  async function deleteItemHandler() {
     await fetchDelete(`/lists/${listId}/listitems/${currentItemIndex}`);
     const index = listItems.findIndex((i) => i.itemID === currentItemIndex);
     listItems.splice(index, 1);
@@ -151,32 +155,79 @@
       : null;
     socket.emit("checklist-updated");
   }
+
+  async function deleteListHandler() {
+    const deletion = await fetchDelete(`/lists/${listId}`).then(navigate(`/lists`));
+    console.log(deletion)
+  }
 </script>
 
-<div class="members-list-container">
-  <ul class="flex gap-5">
-    {#if $currentListMembers && $onlineMemberIds}
-      {#each $currentListMembers.members as member}
+<div class="flex justify-between">
+  <div class="members-list-container">
+    <ul class="flex gap-5">
+      {#if $currentListMembers && $onlineMemberIds}
+        {#each $currentListMembers.members as member}
+          <li>
+            <Avatar
+              avatar={member.avatar}
+              color={resolveColor(member.color)}
+              size={40}
+            />
+            <div class="flex">
+              {member.userName}
+              {#if $onlineMemberIds.includes(member.memberId)}
+                <div
+                  class=""
+                  style="background-color: green; border-radius: 50%; width: 6px; height: 6px;"
+                ></div>
+              {/if}
+            </div>
+          </li>
+        {/each}
+      {/if}
+    </ul>
+  </div>
+
+  <div class="relative">
+    <Button onclick={() => (showMenu = !showMenu)}>…</Button>
+    {#if showMenu}
+      <ul
+        class="absolute right-0 whitespace-nowrap p-4 mt-1.5 bg-blue-100 rounded-xl"
+      >
+        <li><button class="m-1 font-semibold">Add collaborator</button></li>
         <li>
-          <Avatar
-            avatar={member.avatar}
-            color={resolveColor(member.color)}
-            size={40}
-          />
-          <div class="flex">
-            {member.userName}
-            {#if $onlineMemberIds.includes(member.memberId)}
-              <div
-                class=""
-                style="background-color: green; border-radius: 50%; width: 6px; height: 6px;"
-              ></div>
-            {/if}
-          </div>
+          <button onclick={() => navigate(`/lists`)} class="m-1 font-semibold"
+            >Back to lists</button
+          >
         </li>
-      {/each}
+        <li>
+          <button
+            onclick={() => deleteDialog.showModal()}
+            class="m-1 font-semibold text-red-700">Delete this list</button
+          >
+        </li>
+        <li>
+          <button onclick={logoutHandler} class="m-1 font-semibold"
+            >Sign out</button
+          >
+        </li>
+      </ul>
     {/if}
-  </ul>
+  </div>
 </div>
+
+<dialog
+  bind:this={deleteDialog}
+  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+>
+  <div class="text-2xl font-semibold w-full">
+    Are you sure you want to delete this list?
+  </div>
+  <div class="mt-4 gap-10 flex justify-center">
+    <DeleteButton onclick={deleteListHandler}>Yes</DeleteButton>
+    <Button onclick={() => deleteDialog.close()}>No</Button>
+  </div>
+</dialog>
 
 <h1 class="font-semibold text-2xl mt-4 mb-4">{listName}</h1>
 
@@ -224,14 +275,19 @@
 
 <dialog
   id="add-edit-item-dialog"
-  bind:this={dialog}
+  bind:this={itemDialog}
   class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
-  <input type="text" class="text-2xl w-full" bind:value={currentItemText} placeholder="…" />
+  <input
+    type="text"
+    class="text-2xl w-full"
+    bind:value={currentItemText}
+    placeholder="…"
+  />
   <div class="mt-4 flex justify-between">
     <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
     {#if currentItemIndex !== null}
-      <DeleteButton onclick={() => deleteHandler()}>Delete</DeleteButton>
+      <DeleteButton onclick={() => deleteItemHandler()}>Delete</DeleteButton>
       <Button onclick={saveHandler} disabled={isEmptyString}>Save</Button>
     {:else}
       <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>

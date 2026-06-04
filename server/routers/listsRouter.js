@@ -85,4 +85,23 @@ router.post("/lists", authMiddleware, (req, res) => {
     .json({ data: { listId: listInsert.lastInsertRowid, listName } });
 });
 
+router.delete(
+  "/lists/:listId",
+  authMiddleware,
+  listMemberMiddleware,
+  (req, res) => {
+    const listId = req.params.listId;
+
+    const listDeletion = db
+      .prepare(
+        `
+    DELETE FROM lists WHERE list_id = ?
+    `,
+      )
+      .run(listId);
+
+    res.status(200).json({ deleted: listDeletion.changes });
+  },
+);
+
 export default router;
