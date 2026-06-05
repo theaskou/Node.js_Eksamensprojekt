@@ -17,16 +17,18 @@
   import DeleteButton from "../lib/DeleteButton.svelte";
   import logoutHandler from "../utils/logoutUtil";
   import { navigate } from "svelte-routing";
+  import { preventDefault } from "svelte/legacy";
+  import { toast } from "@zerodevx/svelte-toast";
   const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-
-  // Back to lists view
 
   let { user, listId } = $props();
   let listItems = $state([]);
   let sortedItems = $derived(sortByDate(listItems));
   let listName = $state("");
   let itemDialog;
+  let inviteDialog;
   let deleteDialog;
+  let recieverEmail = $state("");
   let showMenu = $state(false);
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
@@ -39,7 +41,7 @@
 
   async function fetchListItems() {
     const result = await fetchGet(`/lists/${listId}/items`);
-    listItems = result.listItems;
+    listItems = result.listItems ?? [];
     listName = result.listName;
   }
 
@@ -157,8 +159,25 @@
   }
 
   async function deleteListHandler() {
-    const deletion = await fetchDelete(`/lists/${listId}`).then(navigate(`/lists`));
-    console.log(deletion)
+    const deletion = await fetchDelete(`/lists/${listId}`).then(
+      navigate(`/lists`, { replace: true }),
+    );
+  }
+
+  let inviteError = $state("");
+
+  async function sendInvitationHandler(event) {
+    event.preventDefault();
+    const sendEmail = await fetchPost(`/lists/${listId}/invite`, {
+      email: recieverEmail,
+    });
+    if (sendEmail.error) {
+      inviteError = sendEmail.error;
+    } else {
+      inviteError = "";
+      inviteDialog.close();
+      toast.push(sendEmail.message);
+    }
   }
 </script>
 
@@ -194,7 +213,12 @@
       <ul
         class="absolute right-0 whitespace-nowrap p-4 mt-1.5 bg-blue-100 rounded-xl"
       >
-        <li><button class="m-1 font-semibold">Add collaborator</button></li>
+        <li>
+          <button
+            onclick={() => inviteDialog.showModal()}
+            class="m-1 font-semibold">Add collaborator</button
+          >
+        </li>
         <li>
           <button onclick={() => navigate(`/lists`)} class="m-1 font-semibold"
             >Back to lists</button
@@ -215,6 +239,30 @@
     {/if}
   </div>
 </div>
+
+<dialog
+  bind:this={inviteDialog}
+  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+>
+  <form onsubmit={sendInvitationHandler}>
+    <div class="text-2xl w-full mb-2.5">Send an invitation by email:</div>
+    <input
+      bind:value={recieverEmail}
+      type="email"
+      class="text-2xl w-full"
+      placeholder="Collaborator's email…"
+    />
+    {#if inviteError}
+      <p class="text-red-500 text-sm mt-2">{inviteError}</p>
+    {/if}
+    <div class="mt-4 gap-10 flex justify-center">
+      <SecondaryButton type="button" onclick={() => inviteDialog.close()}
+        >Cancel</SecondaryButton
+      >
+      <Button type="submit">Send invitation</Button>
+    </div>
+  </form>
+</dialog>
 
 <dialog
   bind:this={deleteDialog}

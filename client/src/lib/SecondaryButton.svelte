@@ -1,5 +1,5 @@
 <script>
-  let { disabled, command, commandfor, onclick, children } = $props();
+  let { disabled, command, commandfor, onclick, type, children } = $props();
 </script>
 
 <button
@@ -8,6 +8,7 @@
   {command}
   {commandfor}
   {onclick}
+  {type}
 >
   {@render children?.()}
 </button>

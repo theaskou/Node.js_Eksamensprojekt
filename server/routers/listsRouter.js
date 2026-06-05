@@ -2,6 +2,8 @@ import { Router } from "express";
 import db from "../database/connection.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import listMemberMiddleware from "../middleware/listMemberMiddleware.js";
+import { sendInvitationEmail } from "../utils/emails/sendEmails.js";
+import { verificationTokens, invitationTokens } from "../utils/emails/verificationTokens.js";
 
 const router = Router();
 
@@ -83,6 +85,83 @@ router.post("/lists", authMiddleware, (req, res) => {
   res
     .status(201)
     .json({ data: { listId: listInsert.lastInsertRowid, listName } });
+});
+
+router.post(
+  "/lists/:listId/invite",
+  authMiddleware,
+  listMemberMiddleware,
+  (req, res) => {
+    const listId = req.params.listId;
+    const recieverEmail = req.body.email;
+    const invitingUserId = req.session.userId;
+
+    const userCheck = db
+      .prepare(
+        `
+    SELECT user_id, user_name FROM users WHERE email = ?;
+    `,
+      )
+      .get(recieverEmail);
+
+    if (!userCheck) {
+      res.status(404).json({ error: "The user is not signed up." });
+      return;
+    }
+
+    const result = db
+      .prepare(
+        `
+        SELECT lists.list_name, users.user_name AS inviter_name 
+        FROM lists
+        JOIN users ON users.user_id = ?
+        WHERE lists.list_id = ?`,
+      )
+      .get(invitingUserId, listId);
+
+    const recieverUserId = userCheck.user_id;
+    const recieverName = userCheck.user_name;
+    const senderName = result.inviter_name;
+    const listName = result.list_name;
+
+    sendInvitationEmail(
+      recieverEmail,
+      recieverUserId,
+      recieverName,
+      senderName,
+      listName,
+      listId,
+    );
+
+    res.status(200).json({ message: "An email invitation was sent." });
+  },
+);
+
+router.post("/lists/:listId/members", (req, res) => {
+  const { userId, token } = req.body;
+  const listId = req.params.listId;
+  const expectedToken = invitationTokens.get(Number(userId));
+
+  if (!expectedToken || Number(token) !== expectedToken) {
+    return res
+      .status(400)
+      .json({ error: "Invalid token. User was not added to the list." });
+  }
+
+  const result = db
+    .prepare(
+      `
+  INSERT INTO list_members (user_id, list_id) VALUES (?, ?)
+  `,
+    )
+    .run(userId, listId);
+
+  if (result.changes) {
+    res.status(200).json({ message: "The user was added to the list." });
+    invitationTokens.delete(userId);
+  } else {
+    res.status(500).json({ error: "Failed to add user to the list." });
+  }
 });
 
 router.delete(

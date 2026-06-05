@@ -86,6 +86,11 @@ app.use(listsRouter);
 import listItemsRouter from "./routers/listItemsRouter.js";
 app.use(listItemsRouter);
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: err.message });
+});
+
 const PORT = process.env.PORT ?? 8080;
 
 server.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));

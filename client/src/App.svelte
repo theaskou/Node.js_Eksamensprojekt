@@ -8,6 +8,7 @@
   import ProtectedRoute from "./lib/ProtectedRoute.svelte";
   import { SvelteToast } from "@zerodevx/svelte-toast";
   import EmailVerified from "./pages/EmailVerified.svelte";
+  import InvitationAccepted from "./pages/InvitationAccepted.svelte";
 
   let displaySignUp = $state(true);
 </script>
@@ -56,7 +57,10 @@
       </ProtectedRoute>
     </Route>
     <Route path="/verify">
-        <EmailVerified />
+      <EmailVerified />
+    </Route>
+    <Route path="/acceptinvitation">
+      <InvitationAccepted />
     </Route>
   </main>
 </Router>

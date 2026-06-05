@@ -63,10 +63,15 @@
   });
 </script>
 
-<dialog bind:this={dialog}>
-  <p>🍪 This website uses cookies 🍪</p>
-  <p>You accept cookies by signing in.</p>
-  <Button onclick={() => dialog.close()}>OK!</Button>
+<dialog
+  bind:this={dialog}
+  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+>
+  <div class="flex flex-col items-center">
+    <p class="font-semibold">🍪 This website uses cookies 🍪</p>
+    <p class="mb-3">You accept cookies by signing in.</p>
+    <Button onclick={() => dialog.close()}>OK!</Button>
+  </div>
 </dialog>
 
 {#if !displayCreateProfile}

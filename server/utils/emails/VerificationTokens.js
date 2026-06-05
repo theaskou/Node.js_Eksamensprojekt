@@ -1,5 +1,5 @@
-const verificationTokens = new Map();
+export const verificationTokens = new Map();
 
-export default verificationTokens;
+export const invitationTokens = new Map();
 
 // Saving tokens in backend instead? So that they persist during server restarts for example.

@@ -2,10 +2,10 @@ import { Router } from "express";
 import db from "../database/connection.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import passwordAuthentication from "../utils/passwordHandling/passwordAuth.js";
-import verificationTokens from "../utils/emails/verificationTokens.js";
+import { verificationTokens } from "../utils/emails/verificationTokens.js";
 import pwdHashing from "../utils/passwordHandling/passwordHashing.js";
 import rateLimiter from "../utils/rateLimiters/rateLimiter.js";
-import sendVerificationEmail from "../utils/emails/sendEmails.js";
+import { sendVerificationEmail } from "../utils/emails/sendEmails.js";
 
 const router = Router();
 
@@ -78,7 +78,6 @@ router.post("/users", rateLimiter, async (req, res) => {
 
     sendVerificationEmail(email, name, userId);
 
-    // TODO: Handle "Remember to verify your email" notification?
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     console.error(error);
