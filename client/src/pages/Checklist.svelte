@@ -182,30 +182,29 @@
 </script>
 
 <div class="flex justify-between">
-  <div class="members-list-container">
-    <ul class="flex gap-5">
-      {#if $currentListMembers && $onlineMemberIds}
-        {#each $currentListMembers.members as member}
-          <li>
+  <ul class="flex gap-5">
+    {#if $currentListMembers && $onlineMemberIds}
+      {#each $currentListMembers.members as member}
+        <li>
+          <div class="relative w-fit">
             <Avatar
               avatar={member.avatar}
               color={resolveColor(member.color)}
               size={40}
             />
-            <div class="flex">
-              {member.userName}
-              {#if $onlineMemberIds.includes(member.memberId)}
-                <div
-                  class=""
-                  style="background-color: green; border-radius: 50%; width: 6px; height: 6px;"
-                ></div>
-              {/if}
-            </div>
-          </li>
-        {/each}
-      {/if}
-    </ul>
-  </div>
+            {#if $onlineMemberIds.includes(member.memberId)}
+              <div
+                class="absolute -right-px -bottom-px border border-white bg-green-600 rounded-full w-2.5 h-2.5"
+              ></div>
+            {/if}
+          </div>
+          <div>
+            {member.userName}
+          </div>
+        </li>
+      {/each}
+    {/if}
+  </ul>
 
   <div class="relative">
     <Button onclick={() => (showMenu = !showMenu)}>…</Button>
@@ -242,7 +241,7 @@
 
 <dialog
   bind:this={inviteDialog}
-  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <form onsubmit={sendInvitationHandler}>
     <div class="text-2xl w-full mb-2.5">Send an invitation by email:</div>
@@ -266,7 +265,7 @@
 
 <dialog
   bind:this={deleteDialog}
-  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <div class="text-2xl font-semibold w-full">
     Are you sure you want to delete this list?
@@ -324,7 +323,7 @@
 <dialog
   id="add-edit-item-dialog"
   bind:this={itemDialog}
-  class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <label>
     <div class="mb-2 font-semibold">To-do item:</div>
