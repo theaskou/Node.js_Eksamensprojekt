@@ -20,10 +20,15 @@
   }
 </script>
 
-<form id="login-form" on:submit={handleLogin}>
+<form
+  id="login-form"
+  on:submit={handleLogin}
+  class="bg-stone-100 flex flex-col gap-6 p-6"
+>
   <label>
-    Email:
+    <div class="text-sm font-semibold mb-1">Email:</div>
     <input
+      class="bg-white w-full rounded-lg px-2 py-1"
       type="text"
       bind:value={email}
       id="email"
@@ -32,8 +37,9 @@
     />
   </label>
   <label>
-    Password:
+    <div class="text-sm font-semibold mb-1">Password:</div>
     <input
+      class="bg-white w-full rounded-lg px-2 py-1"
       type="password"
       bind:value={password}
       id="password"
@@ -42,5 +48,5 @@
     />
   </label>
 
-<Button>Log in</Button>
+  <Button>Log in</Button>
 </form>

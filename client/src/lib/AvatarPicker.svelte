@@ -5,13 +5,12 @@
   let { setColor, setAvatar } = $props();
   let selectedAvatar = $state("");
   let selectedColor = $state("");
-  
 </script>
 
 <div class="container">
   <div>
     <div class="headlines">
-      <h2>Pick a color and an avatar</h2>
+      <h2 class="font-semibold mb-4">Pick a color and an avatar:</h2>
     </div>
 
     <div class="profile-avatar-creator">
@@ -60,8 +59,6 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
   }
 
   .profile-avatar-creator {
@@ -78,8 +75,8 @@
   }
 
   .color-option {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border: none;
     border-radius: 50%;
   }
@@ -94,17 +91,13 @@
   .avatar-option {
     border: none;
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 66px;
+    height: 66px;
     gap: 2px;
   }
 
   .avatar-option img {
     max-width: 100%;
     max-height: 100%;
-  }
-
-  .save-button {
-    align-self: center;
   }
 </style>

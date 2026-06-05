@@ -10,6 +10,7 @@
   import { currentListMembers } from "../stores/listMembersStore.js";
   import Button from "../lib/Button.svelte";
   import SecondaryButton from "../lib/SecondaryButton.svelte";
+  import SignedInAs from "../lib/SignedInAs.svelte";
 
   let { user } = $props();
   let userData = $state(null);
@@ -52,14 +53,9 @@
 </script>
 
 {#if userData}
-  <div class="flex gap-4 items-center">
-    <Avatar avatar={userData.avatar} color={resolvedColor} />
-    <div>
-      <div class="text-xs text-stone-500">Signed in as</div>
-      <div>{userData.userName}</div>
-    </div>
-  </div>
-  <button class="flex items-end" onclick={logoutHandler}>Log out</button>
+  <a href="/profile">
+    <SignedInAs userName={userData.userName} avatar={userData.avatar} color={userData.color} />
+  </a>
 {/if}
 
 <div class="flex justify-between items-center mt-6 mb-8">
@@ -80,9 +76,9 @@
     bind:value={newListName}
     placeholder="Name your new list…"
   />
-    <div class="mt-4 flex justify-between">
-  <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
-  <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>
+  <div class="mt-4 flex justify-between">
+    <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
+    <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>
   </div>
 </dialog>
 

@@ -6,6 +6,7 @@
   import Button from "../lib/Button.svelte";
   import AvatarPicker from "../lib/AvatarPicker.svelte";
   import { onMount } from "svelte";
+  import SecondaryButton from "../lib/SecondaryButton.svelte";
 
   let name = $state("");
   let email = $state("");
@@ -75,10 +76,11 @@
 </dialog>
 
 {#if !displayCreateProfile}
-  <form id="sign-up-form">
+  <form id="sign-up-form" class="bg-stone-100 flex flex-col gap-6 p-6">
     <label>
-      Name:
+      <div class="text-sm font-semibold mb-1">Name:</div>
       <input
+        class="bg-white w-full rounded-lg px-2 py-1"
         type="text"
         bind:value={name}
         id="user-name"
@@ -87,8 +89,9 @@
       />
     </label>
     <label>
-      Email:
+      <div class="text-sm font-semibold mb-1">Email:</div>
       <input
+        class="bg-white w-full rounded-lg px-2 py-1"
         type="email"
         bind:value={email}
         id="email"
@@ -97,8 +100,9 @@
       />
     </label>
     <label>
-      Password:
+      <div class="text-sm font-semibold mb-1">Password:</div>
       <input
+        class="bg-white w-full rounded-lg px-2 py-1"
         type="password"
         bind:value={pwd}
         id="password"
@@ -107,8 +111,9 @@
       />
     </label>
     <label>
-      Repeat password:
+      <div class="text-sm font-semibold mb-1">Repeat password:</div>
       <input
+        class="bg-white w-full rounded-lg px-2 py-1"
         type="password"
         bind:value={repeatedPwd}
         id="password-repeated"
@@ -116,13 +121,19 @@
         placeholder="Repeat your password…"
       />
     </label>
+    <Button
+      disabled={disableNextButton}
+      onclick={() => (displayCreateProfile = true)}>Next</Button
+    >
   </form>
-  <Button
-    disabled={disableNextButton}
-    onclick={() => (displayCreateProfile = true)}>Next</Button
-  >
 {:else}
-  <AvatarPicker {setAvatar} {setColor} />
-  <Button onclick={() => (displayCreateProfile = false)}>Back</Button>
-  <Button onclick={handleSignUp}>Sign up</Button>
+  <div class="bg-stone-100 flex flex-col gap-6 p-6">
+    <AvatarPicker {setAvatar} {setColor} />
+    <div class="flex justify-between">
+      <SecondaryButton onclick={() => (displayCreateProfile = false)}
+        >Back</SecondaryButton
+      >
+      <Button onclick={handleSignUp}>Sign up</Button>
+    </div>
+  </div>
 {/if}

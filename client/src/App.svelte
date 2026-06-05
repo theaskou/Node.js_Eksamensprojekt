@@ -9,6 +9,7 @@
   import { SvelteToast } from "@zerodevx/svelte-toast";
   import EmailVerified from "./pages/EmailVerified.svelte";
   import InvitationAccepted from "./pages/InvitationAccepted.svelte";
+  import ProfileSettings from "./pages/ProfileSettings.svelte";
 
   let displaySignUp = $state(true);
 </script>
@@ -18,11 +19,13 @@
 <Router>
   <main class="m-4 max-w-[375px] relative">
     <Route path="/">
-      <div class="auth-forms">
-        <fieldset class="auth-switcher">
+      <div>
+        <fieldset class="flex">
           <label
+            class="has-checked:bg-stone-100 w-full text-center py-3 font-semibold rounded-t-xl"
             >Sign up
             <input
+              class="appearance-none"
               type="radio"
               name="form-selector"
               value={true}
@@ -30,8 +33,10 @@
             />
           </label>
           <label
+            class="has-checked:bg-stone-100 w-full text-center py-3 font-semibold rounded-t-xl"
             >Log in
             <input
+              class="appearance-none"
               type="radio"
               name="form-selector"
               value={false}
@@ -54,6 +59,11 @@
     <Route path="/lists/:id" let:params>
       <ProtectedRoute let:user>
         <Checklist {user} listId={params.id} />
+      </ProtectedRoute>
+    </Route>
+    <Route path="/profile">
+      <ProtectedRoute let:user>
+        <ProfileSettings {user} />
       </ProtectedRoute>
     </Route>
     <Route path="/verify">

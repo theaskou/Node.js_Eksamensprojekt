@@ -1,6 +1,7 @@
 import { Router } from "express";
 import db from "../database/connection.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import deleteAuthentication from "../utils/passwordHandling/deleteAuth.js";
 
 const router = Router();
 
@@ -16,6 +17,41 @@ router.get("/users/me", authMiddleware, (req, res) => {
     avatar: user.avatar,
     color: user.color,
   });
+});
+
+router.delete("/users/:id", authMiddleware, async (req, res) => {
+  const userId = req.params.id;
+  const verifiedId = req.session.userId;
+  const { pwd } = req.body;
+
+  if (userId !== verifiedId) {
+    return res.status(403).json({
+      error: "You do not have permission to delete an account you do not own",
+    });
+  }
+
+  try {
+    await deleteAuthentication(verifiedId, pwd);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  try {
+    const result = db
+      .prepare(`DELETE FROM users WHERE user_id = ?`)
+      .run(verifiedId);
+
+    if (!result.changes) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    req.session.destroy();
+    res.status(200).json({ deleted: result.changes });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
 });
 
 export default router;
