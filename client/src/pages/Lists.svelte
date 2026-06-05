@@ -54,7 +54,11 @@
 
 {#if userData}
   <a href="/profile">
-    <SignedInAs userName={userData.userName} avatar={userData.avatar} color={userData.color} />
+    <SignedInAs
+      userName={userData.userName}
+      avatar={userData.avatar}
+      color={userData.color}
+    />
   </a>
 {/if}
 
@@ -70,12 +74,15 @@
   class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
   bind:this={dialog}
 >
-  <input
-    type="text"
-    class="text-2xl w-full"
-    bind:value={newListName}
-    placeholder="Name your new list…"
-  />
+  <label>
+    <div class="mb-2 font-semibold">List name:</div>
+    <input
+      type="text"
+      class="text-2xl w-full"
+      bind:value={newListName}
+      placeholder="Name your new list…"
+    />
+  </label>
   <div class="mt-4 flex justify-between">
     <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
     <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>

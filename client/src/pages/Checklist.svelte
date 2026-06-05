@@ -326,12 +326,15 @@
   bind:this={itemDialog}
   class="m-auto mx-3 w-[calc(100%-1.5rem)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
-  <input
-    type="text"
-    class="text-2xl w-full"
-    bind:value={currentItemText}
-    placeholder="…"
-  />
+  <label>
+    <div class="mb-2 font-semibold">To-do item:</div>
+    <input
+      type="text"
+      class="text-2xl w-full"
+      bind:value={currentItemText}
+      placeholder="…"
+    />
+  </label>
   <div class="mt-4 flex justify-between">
     <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
     {#if currentItemIndex !== null}
