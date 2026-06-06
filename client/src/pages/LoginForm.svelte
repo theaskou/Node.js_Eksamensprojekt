@@ -22,7 +22,7 @@
 
 <form
   id="login-form"
-  on:submit={handleLogin}
+  onsubmit={handleLogin}
   class="bg-stone-100 flex flex-col gap-6 p-6"
 >
   <label>

@@ -17,7 +17,6 @@
   import DeleteButton from "../lib/DeleteButton.svelte";
   import logoutHandler from "../utils/logoutUtil";
   import { navigate } from "svelte-routing";
-  import { preventDefault } from "svelte/legacy";
   import { toast } from "@zerodevx/svelte-toast";
   const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 

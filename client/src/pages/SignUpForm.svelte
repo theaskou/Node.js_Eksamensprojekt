@@ -2,7 +2,6 @@
   import { fetchPost } from "../utils/fetchUtil.js";
   import { navigate } from "svelte-routing";
   import { toast } from "@zerodevx/svelte-toast";
-  import { preventDefault } from "svelte/legacy";
   import Button from "../lib/Button.svelte";
   import AvatarPicker from "../lib/AvatarPicker.svelte";
   import { onMount } from "svelte";
@@ -16,7 +15,7 @@
   let selectedColor = $state("");
   let dialog;
   let disableNextButton = $derived(
-      name.length < 1 ||
+    name.length < 1 ||
       email.length < 1 ||
       pwd.length < 1 ||
       repeatedPwd.length < 1 ||
@@ -56,10 +55,8 @@
   onMount(() => {
     const cookieDialogDisplayed = localStorage.getItem("CookieDialogDisplayed");
     if (!cookieDialogDisplayed) {
-      if (!cookieDialogDisplayed) {
-        dialog.showModal();
-        localStorage.setItem("CookieDialogDisplayed", true);
-      }
+      dialog.showModal();
+      localStorage.setItem("CookieDialogDisplayed", true);
     }
   });
 </script>
