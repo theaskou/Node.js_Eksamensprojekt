@@ -7,15 +7,17 @@ async function deleteAuthentication(userId, password) {
     .get(userId);
 
   if (!user) {
-    throw new Error("User not found");
-    return;
+    const error = new Error("User not found");
+    error.status = 404;
+    throw error;
   }
 
   const isAuthenticated = await bcrypt.compare(password, user.pwd);
 
   if (!isAuthenticated) {
-    throw new Error("Not authorized");
-    return;
+    const error = new Error("Incorrect password");
+    error.status = 401;
+    throw error;
   }
 
   return true;

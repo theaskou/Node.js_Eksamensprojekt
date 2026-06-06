@@ -19,8 +19,8 @@ router.get("/users/me", authMiddleware, (req, res) => {
   });
 });
 
-router.delete("/users/:id", authMiddleware, async (req, res) => {
-  const userId = req.params.id;
+router.post("/users/:id/delete", authMiddleware, async (req, res) => {
+  const userId = Number(req.params.id);
   const verifiedId = req.session.userId;
   const { pwd } = req.body;
 
@@ -32,11 +32,7 @@ router.delete("/users/:id", authMiddleware, async (req, res) => {
 
   try {
     await deleteAuthentication(verifiedId, pwd);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
 
-  try {
     const result = db
       .prepare(`DELETE FROM users WHERE user_id = ?`)
       .run(verifiedId);
@@ -44,11 +40,13 @@ router.delete("/users/:id", authMiddleware, async (req, res) => {
     if (!result.changes) {
       return res.status(404).json({ error: "User not found" });
     }
-    
+
     req.session.destroy();
     res.status(200).json({ deleted: result.changes });
-
   } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ error: error.message });
+    }
     console.error(error);
     res.status(500).json({ error: "Failed to delete user" });
   }

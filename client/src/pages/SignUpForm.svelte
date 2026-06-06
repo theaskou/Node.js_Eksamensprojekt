@@ -16,7 +16,7 @@
   let selectedColor = $state("");
   let dialog;
   let disableNextButton = $derived(
-    name.length < 1 ||
+      name.length < 1 ||
       email.length < 1 ||
       pwd.length < 1 ||
       repeatedPwd.length < 1 ||
@@ -48,7 +48,7 @@
     if (response.error) {
       toast.push(`${response.error}`);
     } else {
-      toast.push(`${response.message}`);
+      toast.push(`${"Welcome! Remember to verify you email."}`);
       navigate("/lists", { replace: true });
     }
   }

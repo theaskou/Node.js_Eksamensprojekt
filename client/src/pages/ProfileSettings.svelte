@@ -4,7 +4,7 @@
   import Button from "../lib/Button.svelte";
   import DeleteButton from "../lib/DeleteButton.svelte";
   import SecondaryButton from "../lib/SecondaryButton.svelte";
-  import { fetchGet, fetchDelete } from "../utils/fetchUtil";
+  import { fetchGet, fetchPost } from "../utils/fetchUtil";
   import logoutHandler from "../utils/logoutUtil";
   import { navigate } from "svelte-routing";
   import SignedInAs from "../lib/SignedInAs.svelte";
@@ -12,6 +12,7 @@
   let { user } = $props();
   let userData = $state(null);
   let pwd = $state("");
+  let incorrectPwd = $state(null);
   let deleteDialog;
 
   onMount(async () => {
@@ -22,14 +23,19 @@
   async function deleteAccountHandler(event) {
     event.preventDefault();
 
-    const result = await fetchDelete(`users/${user.userId}`, { pwd });
+    const result = await fetchPost(`/users/${user.userId}/delete`, { pwd });
 
     if (result.error) {
-      toast.push(result.error);
+      incorrectPwd = true;
     } else {
       toast.push("Your account was deleted.");
       navigate("/", { replace: true });
     }
+  }
+
+  function closeDialog() {
+    deleteDialog.close();
+    incorrectPwd = null;
   }
 </script>
 
@@ -46,6 +52,9 @@
 
   <DeleteButton onclick={() => deleteDialog.showModal()}
     >Delete my account</DeleteButton
+  >
+  <SecondaryButton onclick={() => navigate("/lists")}
+    >Back to lists</SecondaryButton
   >
 </div>
 
@@ -70,9 +79,12 @@
           placeholder="Your password…"
         />
       </label>
+      {#if incorrectPwd}
+        <p class="text-red-600 pt-2">Incorrect password</p>
+      {/if}
     </form>
     <DeleteButton onclick={deleteAccountHandler}>Delete my account</DeleteButton
     >
-    <Button onclick={() => deleteDialog.close()}>Cancel</Button>
+    <Button onclick={closeDialog}>Cancel</Button>
   </div>
 </dialog>

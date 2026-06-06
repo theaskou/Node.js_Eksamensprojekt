@@ -24,7 +24,7 @@ db.exec(`
     list_name VARCHAR(100) NOT NULL,
     created_by INTEGER NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (created_by) REFERENCES users(user_id)
+    FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE CASCADE
     );
 `);
 
@@ -33,7 +33,7 @@ db.exec(`
     user_id INTEGER NOT NULL,
     list_id INTEGER NOT NULL,
     PRIMARY KEY (user_id, list_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (list_id) REFERENCES lists(list_id) ON DELETE CASCADE
     );
 `);
@@ -48,7 +48,7 @@ db.exec(`
     checked INTEGER NOT NULL DEFAULT 0,
     checked_by INTEGER,
     FOREIGN KEY (list_id) REFERENCES lists(list_id) ON DELETE CASCADE,
-    FOREIGN KEY (added_by) REFERENCES users(user_id),
+    FOREIGN KEY (added_by) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (checked_by) REFERENCES users(user_id) ON DELETE CASCADE
     );
 `);
