@@ -52,6 +52,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Your lists</title>
+</svelte:head>
+
 {#if userData}
   <a href="/profile">
     <SignedInAs

@@ -181,6 +181,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>{listName}</title>
+</svelte:head>
+
 <div class="flex justify-between">
   <ul class="flex gap-5">
     {#if $currentListMembers && $onlineMemberIds}
@@ -316,7 +320,7 @@
     </li>
   {/each}
 </ul>
-<div class="fixed left-[calc(50%-24px)] bottom-4">
+<div class="fixed flex justify-center w-full max-w-[375px] left-4 bottom-4">
   <Button onclick={openAddDialog}>+</Button>
 </div>
 
