@@ -18,18 +18,18 @@ app.use(
 
 import session from "express-session";
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24,
-    },
-  }),
-);
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24,
+  },
+});
+
+app.use(sessionMiddleware);
 
 import helmet from "helmet";
 app.use(helmet());
@@ -44,6 +44,7 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+io.engine.use(sessionMiddleware);
 
 async function emitOnlineUsers(listId) {
   const room = `list-${listId}`;
@@ -60,7 +61,13 @@ async function emitOnlineUsers(listId) {
 }
 
 io.on("connection", (socket) => {
-  const { userId, listId } = socket.handshake.auth;
+  const userId = socket.request.session.userId;
+  const { listId } = socket.handshake.auth;
+
+  if (!userId) {
+    socket.disconnect();
+    return;
+  }
 
   if (!isListMember(userId, listId)) {
     socket.disconnect();

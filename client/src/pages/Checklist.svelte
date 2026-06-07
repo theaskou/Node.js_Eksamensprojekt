@@ -60,7 +60,6 @@
 
     socket = io(SERVER_BASE_URL, {
       auth: {
-        userId: user.userId,
         listId,
       },
       withCredentials: true,
