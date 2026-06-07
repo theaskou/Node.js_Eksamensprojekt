@@ -1,13 +1,8 @@
 import db from "../database/connection.js";
+import isListMember from "../utils/listMemberCheck.js";
 
 function listMemberMiddleware(req, res, next) {
-  const listMembers = db
-    .prepare(`SELECT user_id FROM list_members WHERE list_id = ?`)
-    .all(req.params.listId);
-
-  const isMember = listMembers.some(
-    ({ user_id }) => user_id === req.session.userId,
-  );
+  const isMember = isListMember(req.session.userId, req.params.listId);
 
   if (!isMember) {
     return res

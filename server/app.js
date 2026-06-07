@@ -1,4 +1,5 @@
 import express from "express";
+import isListMember from "./utils/listMemberCheck.js";
 
 const app = express();
 
@@ -44,33 +45,50 @@ const io = new Server(server, {
   },
 });
 
-const activeUsers = new Map();
+async function emitOnlineUsers(listId) {
+  const room = `list-${listId}`;
+  const socketsInRoom = await io.in(room).fetchSockets();
+  const userIdsInRoom = [
+    ...new Set(
+      socketsInRoom.map((socket) => {
+        return socket.data.userId;
+      }),
+    ),
+  ];
+
+  io.in(room).emit("online-users", userIdsInRoom);
+}
 
 io.on("connection", (socket) => {
-  const { userId } = socket.handshake.auth;
-  activeUsers.set(socket.id, userId);
+  const { userId, listId } = socket.handshake.auth;
 
-  socket.broadcast.emit("user-connected", { userId });
+  if (!isListMember(userId, listId)) {
+    socket.disconnect();
+    return;
+  }
 
-  socket.emit("user-list", [...activeUsers.values()]);
+  socket.data.userId = userId;
+  socket.data.listId = listId;
+  const room = `list-${listId}`;
+  socket.join(room);
+
+  emitOnlineUsers(listId);
 
   socket.on("disconnect", () => {
-    activeUsers.delete(socket.id);
-    io.emit("user-disconnected", { userId });
-    socket.broadcast.emit("user-stopped-typing", { userId });
+    emitOnlineUsers(listId);
+    socket.to(room).emit("user-stopped-typing", { userId });
   });
 
   socket.on("checklist-updated", () => {
-    socket.broadcast.emit("checklist-updated");
+    socket.to(room).emit("checklist-updated");
   });
 
   socket.on("user-is-typing", () => {
-    socket.broadcast.emit("user-is-typing", { userId });
+    socket.to(room).emit("user-is-typing", { userId });
   });
 
   socket.on("user-stopped-typing", () => {
-
-    socket.broadcast.emit("user-stopped-typing", { userId });
+    socket.to(room).emit("user-stopped-typing", { userId });
   });
 });
 

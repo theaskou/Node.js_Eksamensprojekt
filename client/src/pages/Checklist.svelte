@@ -8,6 +8,8 @@
   } from "../utils/fetchUtil";
   import { sortByDate } from "../utils/sortingUtil.js";
   import Avatar from "../lib/Avatar.svelte";
+  import ChecklistMembers from "../lib/ChecklistMembers.svelte";
+  import ChecklistDropdown from "../lib/ChecklistDropdown.svelte";
   import { resolveColor } from "../lib/config/colors.js";
   import { currentListMembers } from "../stores/listMembersStore.js";
   import io from "socket.io-client";
@@ -15,7 +17,7 @@
   import Button from "../lib/Button.svelte";
   import SecondaryButton from "../lib/SecondaryButton.svelte";
   import DeleteButton from "../lib/DeleteButton.svelte";
-  import logoutHandler from "../utils/logoutUtil";
+
   import { navigate } from "svelte-routing";
   import { toast } from "@zerodevx/svelte-toast";
   const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
@@ -28,7 +30,7 @@
   let inviteDialog;
   let deleteDialog;
   let recieverEmail = $state("");
-  let showMenu = $state(false);
+
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
   let isEmptyString = $derived(
@@ -59,16 +61,13 @@
     socket = io(SERVER_BASE_URL, {
       auth: {
         userId: user.userId,
+        listId,
       },
       withCredentials: true,
     });
 
-    socket.on("user-connected", ({ userId }) => {
-      onlineMemberIds.set([userId, ...$onlineMemberIds]);
-    });
-
-    socket.on("user-list", (onlineUsers) => {
-      onlineMemberIds.set([user.userId, ...onlineUsers]);
+    socket.on("online-users", (onlineUserIds) => {
+      onlineMemberIds.set(onlineUserIds);
     });
 
     socket.on("checklist-updated", () => {
@@ -86,10 +85,6 @@
       usersTyping.update((members) =>
         members.filter((m) => m.memberId !== userId),
       );
-    });
-
-    socket.on("user-disconnected", ({ userId }) => {
-      onlineMemberIds.set($onlineMemberIds.filter((id) => id !== userId));
     });
   });
 
@@ -185,99 +180,12 @@
 </svelte:head>
 
 <div class="flex justify-between">
-  <ul class="flex gap-5">
-    {#if $currentListMembers && $onlineMemberIds}
-      {#each $currentListMembers.members as member}
-        <li>
-          <div class="relative w-fit">
-            <Avatar
-              avatar={member.avatar}
-              color={resolveColor(member.color)}
-              size={40}
-            />
-            {#if $onlineMemberIds.includes(member.memberId)}
-              <div
-                class="absolute -right-px -bottom-px border border-white bg-green-600 rounded-full w-2.5 h-2.5"
-              ></div>
-            {/if}
-          </div>
-          <div>
-            {member.userName}
-          </div>
-        </li>
-      {/each}
-    {/if}
-  </ul>
+  {#if $currentListMembers && $onlineMemberIds}
+    <ChecklistMembers {currentListMembers} {onlineMemberIds} />
+  {/if}
 
-  <div class="relative">
-    <Button onclick={() => (showMenu = !showMenu)}>…</Button>
-    {#if showMenu}
-      <ul
-        class="absolute right-0 whitespace-nowrap p-4 mt-1.5 bg-blue-100 rounded-xl"
-      >
-        <li>
-          <button
-            onclick={() => inviteDialog.showModal()}
-            class="m-1 font-semibold">Add collaborator</button
-          >
-        </li>
-        <li>
-          <button onclick={() => navigate(`/lists`)} class="m-1 font-semibold"
-            >Back to lists</button
-          >
-        </li>
-        <li>
-          <button
-            onclick={() => deleteDialog.showModal()}
-            class="m-1 font-semibold text-red-700">Delete this list</button
-          >
-        </li>
-        <li>
-          <button onclick={logoutHandler} class="m-1 font-semibold"
-            >Sign out</button
-          >
-        </li>
-      </ul>
-    {/if}
-  </div>
+  <ChecklistDropdown {inviteDialog} {deleteDialog} />
 </div>
-
-<dialog
-  bind:this={inviteDialog}
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
->
-  <form onsubmit={sendInvitationHandler}>
-    <div class="text-2xl w-full mb-2.5">Send an invitation by email:</div>
-    <input
-      bind:value={recieverEmail}
-      type="email"
-      class="text-2xl w-full"
-      placeholder="Collaborator's email…"
-    />
-    {#if inviteError}
-      <p class="text-red-500 text-sm mt-2">{inviteError}</p>
-    {/if}
-    <div class="mt-4 gap-10 flex justify-center">
-      <SecondaryButton type="button" onclick={() => inviteDialog.close()}
-        >Cancel</SecondaryButton
-      >
-      <Button type="submit">Send invitation</Button>
-    </div>
-  </form>
-</dialog>
-
-<dialog
-  bind:this={deleteDialog}
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
->
-  <div class="text-2xl font-semibold w-full">
-    Are you sure you want to delete this list?
-  </div>
-  <div class="mt-4 gap-10 flex justify-center">
-    <DeleteButton onclick={deleteListHandler}>Yes</DeleteButton>
-    <Button onclick={() => deleteDialog.close()}>No</Button>
-  </div>
-</dialog>
 
 <h1 class="font-semibold text-2xl mt-4 mb-4">{listName}</h1>
 
@@ -322,6 +230,43 @@
 <div class="fixed flex justify-center w-full max-w-[375px] left-4 bottom-4">
   <Button onclick={openAddDialog}>+</Button>
 </div>
+
+<dialog
+  bind:this={inviteDialog}
+  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+>
+  <form onsubmit={sendInvitationHandler}>
+    <div class="text-2xl w-full mb-2.5">Send an invitation by email:</div>
+    <input
+      bind:value={recieverEmail}
+      type="email"
+      class="text-2xl w-full"
+      placeholder="Collaborator's email…"
+    />
+    {#if inviteError}
+      <p class="text-red-500 text-sm mt-2">{inviteError}</p>
+    {/if}
+    <div class="mt-4 gap-10 flex justify-center">
+      <SecondaryButton type="button" onclick={() => inviteDialog.close()}
+        >Cancel</SecondaryButton
+      >
+      <Button type="submit">Send invitation</Button>
+    </div>
+  </form>
+</dialog>
+
+<dialog
+  bind:this={deleteDialog}
+  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+>
+  <div class="text-2xl font-semibold w-full">
+    Are you sure you want to delete this list?
+  </div>
+  <div class="mt-4 gap-10 flex justify-center">
+    <DeleteButton onclick={deleteListHandler}>Yes</DeleteButton>
+    <Button onclick={() => deleteDialog.close()}>No</Button>
+  </div>
+</dialog>
 
 <dialog
   id="add-edit-item-dialog"
