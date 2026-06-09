@@ -39,7 +39,8 @@ router.post("/logout", (req, res) => {
 
 router.post("/users", rateLimiter, async (req, res) => {
   try {
-    const { name, email, pwd, repeatedPwd, selectedAvatar, selectedColor } = req.body;
+    const { name, email, pwd, repeatedPwd, selectedAvatar, selectedColor } =
+      req.body;
 
     if (!name || !email || !pwd || !repeatedPwd) {
       return res.status(400).json({ error: "All fields are required" });
@@ -60,11 +61,11 @@ router.post("/users", rateLimiter, async (req, res) => {
         .json({ error: "email already exists. Try signing in instead." });
     }
 
-    const hashedPwd = await pwdHashing(pwd);
-
     if (!selectedAvatar || !selectedColor) {
       return res.status(400).json({ error: "Please select color and avatar" });
     }
+
+    const hashedPwd = await pwdHashing(pwd);
 
     const insert = db
       .prepare(

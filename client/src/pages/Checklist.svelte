@@ -6,7 +6,6 @@
     fetchPut,
     fetchDelete,
   } from "../utils/fetchUtil";
-  import { sortByDate } from "../utils/sortingUtil.js";
   import Avatar from "../lib/Avatar.svelte";
   import ChecklistMembers from "../lib/ChecklistMembers.svelte";
   import ChecklistDropdown from "../lib/ChecklistDropdown.svelte";
@@ -24,7 +23,6 @@
 
   let { user, listId } = $props();
   let listItems = $state([]);
-  let sortedItems = $derived(sortByDate(listItems));
   let listName = $state("");
   let itemDialog;
   let inviteDialog;
@@ -41,54 +39,61 @@
   const usersTyping = writable([]);
 
   async function fetchListItems() {
-    const result = await fetchGet(`/lists/${listId}/items`);
-    listItems = result.listItems ?? [];
+    const result = await fetchGet(`/lists/${listId}/listitems`);
+    listItems = (result.listItems ?? []).map((item) => ({
+      ...item,
+      checkedByColor: item.checkedByColor
+        ? resolveColor(item.checkedByColor)
+        : null,
+    }));
     listName = result.listName;
   }
 
   onMount(async () => {
-    fetchListItems();
+    try {
+      await fetchListItems();
 
-    if (!$currentListMembers) {
-      const result = await fetchGet(`/lists/${listId}/members`);
-      currentListMembers.set({
-        listId: result.listId,
-        listName: result.listName,
-        members: result.members,
+      if (!$currentListMembers) {
+        const result = await fetchGet(`/lists/${listId}/members`);
+        currentListMembers.set({
+          listId: result.listId,
+          listName: result.listName,
+          members: result.members,
+        });
+      }
+
+      socket = io(SERVER_BASE_URL, {
+        auth: { listId },
+        withCredentials: true,
       });
+
+      socket.on("online-users", (onlineUserIds) => {
+        onlineMemberIds.set(onlineUserIds);
+      });
+
+      socket.on("checklist-updated", () => {
+        fetchListItems();
+      });
+
+      socket.on("user-is-typing", ({ userId }) => {
+        const member = $currentListMembers?.members.find(
+          (m) => m.memberId === userId,
+        );
+        if (member) usersTyping.update((members) => [member, ...members]);
+      });
+
+      socket.on("user-stopped-typing", ({ userId }) => {
+        usersTyping.update((members) =>
+          members.filter((m) => m.memberId !== userId),
+        );
+      });
+    } catch (error) {
+      navigate("/lists");
     }
-
-    socket = io(SERVER_BASE_URL, {
-      auth: {
-        listId,
-      },
-      withCredentials: true,
-    });
-
-    socket.on("online-users", (onlineUserIds) => {
-      onlineMemberIds.set(onlineUserIds);
-    });
-
-    socket.on("checklist-updated", () => {
-      fetchListItems();
-    });
-
-    socket.on("user-is-typing", ({ userId }) => {
-      const member = $currentListMembers?.members.find(
-        (m) => m.memberId === userId,
-      );
-      if (member) usersTyping.update((members) => [member, ...members]);
-    });
-
-    socket.on("user-stopped-typing", ({ userId }) => {
-      usersTyping.update((members) =>
-        members.filter((m) => m.memberId !== userId),
-      );
-    });
   });
 
   onDestroy(() => {
-    socket.disconnect();
+    socket?.disconnect();
   });
 
   function openAddDialog() {
@@ -100,8 +105,7 @@
     await fetchPost(`/lists/${listId}/listitems`, {
       itemName: currentItemText,
     });
-    const result = await fetchGet(`/lists/${listId}/items`);
-    listItems = result.listItems;
+    await fetchListItems();
     socket.emit("checklist-updated");
     socket.emit("user-is-typing");
     clearCurrentItem();
@@ -124,8 +128,7 @@
     await fetchPut(`/lists/${listId}/listitems/${currentItemIndex}`, {
       itemName: currentItemText,
     });
-    const item = listItems.find((i) => i.itemID === currentItemIndex);
-    item.itemName = currentItemText;
+    await fetchListItems();
     socket.emit("checklist-updated");
     clearCurrentItem();
   }
@@ -143,16 +146,12 @@
     await fetchPut(`/lists/${listId}/listitems/${item.itemID}/checked`, {
       checked: updateCheck,
     });
-    const currentItem = listItems.find((i) => i.itemID === item.itemID);
-    currentItem.checked = !item.checked;
-    currentItem.checkedByColor = !item.checked
-      ? resolveColor(user.color)
-      : null;
+    await fetchListItems();
     socket.emit("checklist-updated");
   }
 
   async function deleteListHandler() {
-    const deletion = await fetchDelete(`/lists/${listId}`).then(
+    const deletion = await fetchDelete(`/lists/${listId}`).then(() =>
       navigate(`/lists`, { replace: true }),
     );
   }
@@ -195,7 +194,7 @@
       {member.userName} is typing...
     </div>
   {/each}
-  {#each sortedItems as item}
+  {#each listItems as item (item.itemID)}
     <li class="border-b border-stone-300">
       <label>
         <div class="flex justify-between">
@@ -204,7 +203,7 @@
               type="checkbox"
               checked={item.checked}
               onchange={() => checkHandler(item)}
-              style="accent-color: {resolveColor(item.checkedByColor) ??
+              style="accent-color: {item.checkedByColor ??
                 resolveColor(user.color)}"
             />
             <div

@@ -6,7 +6,7 @@ import listMemberMiddleware from "../middleware/listMemberMiddleware.js";
 const router = Router();
 
 router.get(
-  "/lists/:listId/items",
+  "/lists/:listId/listitems",
   authMiddleware,
   listMemberMiddleware,
   (req, res) => {
@@ -14,10 +14,11 @@ router.get(
     const getListItems = db
       .prepare(
         `
-        SELECT list_items.*, users.color AS checked_by_color
-        FROM list_items
-        LEFT JOIN users ON list_items.checked_by = users.user_id
-        WHERE list_items.list_id = ?`,
+          SELECT list_items.*, users.color
+          FROM list_items
+          LEFT JOIN users ON list_items.checked_by = users.user_id
+          WHERE list_items.list_id = ?
+          ORDER BY checked ASC, created_at DESC`,
       )
       .all(listId);
 
@@ -36,7 +37,7 @@ router.get(
         createdAt: listItem.created_at,
         checked: listItem.checked,
         checkedBy: listItem.checked_by,
-        checkedByColor: listItem.checked_by_color,
+        checkedByColor: listItem.color,
       });
     }
 

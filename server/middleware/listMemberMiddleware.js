@@ -1,4 +1,3 @@
-import db from "../database/connection.js";
 import isListMember from "../utils/listMemberCheck.js";
 
 function listMemberMiddleware(req, res, next) {
@@ -7,7 +6,7 @@ function listMemberMiddleware(req, res, next) {
   if (!isMember) {
     return res
       .status(403)
-      .json({ error: "You don't have permission to edit this list." });
+      .json({ error: "User is not a list member" });
   }
   next();
 }

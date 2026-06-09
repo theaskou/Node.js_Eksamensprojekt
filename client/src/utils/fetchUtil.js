@@ -1,15 +1,16 @@
 export async function fetchGet(endpoint) {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
-      {
-        credentials: "include",
-      },
-    );
-    return await response.json();
-  } catch (error) {
-    console.log(error);
+  const response = await fetch(
+    `${import.meta.env.VITE_SERVER_BASE_URL}${endpoint}`,
+    {
+      credentials: "include",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(response.status);
   }
+
+  return await response.json();
 }
 
 export async function fetchPost(endpoint, body) {
@@ -27,7 +28,7 @@ export async function fetchPost(endpoint, body) {
     );
     return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -46,7 +47,7 @@ export async function fetchPut(endpoint, body) {
     );
     return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -61,6 +62,6 @@ export async function fetchDelete(endpoint) {
     );
     return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }

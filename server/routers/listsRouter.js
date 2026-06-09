@@ -3,23 +3,28 @@ import db from "../database/connection.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import listMemberMiddleware from "../middleware/listMemberMiddleware.js";
 import { sendInvitationEmail } from "../utils/emails/sendEmails.js";
-import { verificationTokens, invitationTokens } from "../utils/emails/verificationTokens.js";
+import {
+  verificationTokens,
+  invitationTokens,
+} from "../utils/emails/verificationTokens.js";
+import isListMember from "../utils/listMemberCheck.js";
 
 const router = Router();
 
 router.get("/users/:id/lists", authMiddleware, (req, res) => {
-  const listId = req.params.id;
+  const userId = req.params.id;
   const rows = db
     .prepare(
-      `
-            SELECT lists.list_id, lists.list_name, lists.created_at, users.user_id, users.user_name, users.avatar, users.color
-            FROM lists
-            INNER JOIN list_members ON lists.list_id = list_members.list_id
-            INNER JOIN users ON list_members.user_id = users.user_id
-            WHERE lists.list_id IN (SELECT list_id FROM list_members WHERE user_id = ?);
+      ` SELECT lists.list_id, lists.list_name, lists.created_at,
+        users.user_id, users.user_name, users.avatar, users.color
+        FROM list_members AS member
+        JOIN lists ON member.list_id = lists.list_id
+        JOIN list_members ON list_members.list_id = member.list_id
+        JOIN users ON list_members.user_id = users.user_id
+        WHERE member.user_id = ?;
         `,
     )
-    .all(listId);
+    .all(userId);
 
   const lists = [];
   for (const row of rows) {
@@ -109,6 +114,12 @@ router.post(
       return;
     }
 
+    if (isListMember(userCheck.user_id, listId)) {
+      res
+        .status(409)
+        .json({ error: "The user is already a member of this list." });
+    }
+
     const result = db
       .prepare(
         `
@@ -146,6 +157,15 @@ router.post("/lists/:listId/members", (req, res) => {
     return res
       .status(400)
       .json({ error: "Invalid token. User was not added to the list." });
+  }
+
+  const listCheck = db
+    .prepare("SELECT list_id FROM lists WHERE list_id = ?")
+    .get(listId);
+
+  if (!listCheck) {
+    invitationTokens.delete(userId);
+    return res.status(410).json({ error: "This list no longer exists." });
   }
 
   const result = db

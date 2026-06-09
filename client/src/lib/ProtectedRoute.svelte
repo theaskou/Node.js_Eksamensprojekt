@@ -8,13 +8,13 @@
   let user = null;
 
   onMount(async () => {
-    const response = await fetchGet("/authcheck");
-    if (response.error) {
-      toast.push(`⛔️ ${response.error}`);
-      navigate("/", { replace: true });
-    } else {
+    try {
+      const response = await fetchGet("/authcheck");
       isAuthorized = true;
       user = response;
+    } catch (error) {
+      toast.push("Please sign in.");
+      navigate("/", { replace: true });
     }
   });
 </script>
