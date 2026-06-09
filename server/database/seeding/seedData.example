@@ -4,23 +4,23 @@ export default {
       user_name: "",
       email: "",
       pwd: "",
-      verified: true,
-      avatar: 1,
-      color: 1,
+      verified: 0,
+      avatar: "",
+      color: "",
     },
   ],
 
   lists: [
     {
-      name: "",
+      list_name: "",
       created_by: 1,
     },
   ],
 
   list_members: [
     {
-      list_id: 1,
       user_id: 1,
+      list_id: 1,
     },
   ],
 
