@@ -1,6 +1,5 @@
 <script>
   import Checklist from "./pages/Checklist.svelte";
-  import CreateProfile from "./lib/AvatarPicker.svelte";
   import Lists from "./pages/Lists.svelte";
   import LoginForm from "./pages/LoginForm.svelte";
   import SignUpForm from "./pages/SignUpForm.svelte";

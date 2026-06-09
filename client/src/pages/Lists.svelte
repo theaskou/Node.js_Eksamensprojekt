@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import { fetchGet, fetchPost } from "../utils/fetchUtil";
-  import { useLocation } from "svelte-routing";
   import Avatar from "../lib/Avatar.svelte";
   import { resolveColor } from "../lib/config/colors.js";
   import { navigate } from "svelte-routing";
@@ -15,9 +14,6 @@
   let { user } = $props();
   let userData = $state(null);
   let userLists = $state([]);
-  let sortedLists = $derived(sortByDate(userLists));
-  let resolvedColor = $derived(resolveColor(userData?.color));
-  let memberAvatars = $state({});
   let newListName = $state("");
   let isEmptyString = $derived(newListName === null || newListName === "");
   let dialog;
@@ -94,7 +90,7 @@
 </dialog>
 
 <ul class="flex flex-col gap-3">
-  {#each sortedLists as { listId, listName, members }}
+  {#each userLists as { listId, listName, members }}
     <li class="list">
       <button
         class="bg-stone-100 flex w-full justify-between p-4 rounded-xl font-semibold"

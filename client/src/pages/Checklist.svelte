@@ -28,7 +28,6 @@
   let inviteDialog;
   let deleteDialog;
   let recieverEmail = $state("");
-
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
   let isEmptyString = $derived(
@@ -151,7 +150,7 @@
   }
 
   async function deleteListHandler() {
-    const deletion = await fetchDelete(`/lists/${listId}`).then(() =>
+    await fetchDelete(`/lists/${listId}`).then(() =>
       navigate(`/lists`, { replace: true }),
     );
   }
