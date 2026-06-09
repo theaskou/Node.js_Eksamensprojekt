@@ -189,7 +189,7 @@
 
 <ul class="flex flex-col justify-between gap-2 pb-20">
   {#each $usersTyping as member}
-    <div style="color: {resolveColor(member.color)}">
+    <div style="color: {resolveColor(member.color)}" class="flex">
       <Avatar avatar={member.avatar} color="none" size={30} />
       {member.userName} is typing...
     </div>
@@ -225,13 +225,15 @@
     </li>
   {/each}
 </ul>
-<div class="fixed flex justify-center w-full max-w-[375px] left-4 bottom-4">
+<div
+  class="fixed flex justify-center w-[calc(100vw-(16px+16px))] max-w-[375px] left-4 bottom-4"
+>
   <Button onclick={openAddDialog}>+</Button>
 </div>
 
 <dialog
   bind:this={inviteDialog}
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <form onsubmit={sendInvitationHandler}>
     <div class="text-2xl w-full mb-2.5">Send an invitation by email:</div>
@@ -255,7 +257,7 @@
 
 <dialog
   bind:this={deleteDialog}
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <div class="text-2xl font-semibold w-full">
     Are you sure you want to delete this list?
@@ -269,7 +271,7 @@
 <dialog
   id="add-edit-item-dialog"
   bind:this={itemDialog}
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <label>
     <div class="mb-2 font-semibold">To-do item:</div>
