@@ -16,7 +16,6 @@
   import Button from "../lib/Button.svelte";
   import SecondaryButton from "../lib/SecondaryButton.svelte";
   import DeleteButton from "../lib/DeleteButton.svelte";
-
   import { navigate } from "svelte-routing";
   import { toast } from "@zerodevx/svelte-toast";
   const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
@@ -30,6 +29,7 @@
   let recieverEmail = $state("");
   let currentItemText = $state(null);
   let currentItemIndex = $state(null);
+  let inviteError = $state("");
   let isEmptyString = $derived(
     currentItemText === null || currentItemText === "",
   );
@@ -155,8 +155,6 @@
     );
   }
 
-  let inviteError = $state("");
-
   async function sendInvitationHandler(event) {
     event.preventDefault();
     const sendEmail = await fetchPost(`/lists/${listId}/invite`, {
@@ -177,7 +175,7 @@
 </svelte:head>
 
 <div class="flex justify-between">
-  {#if $currentListMembers && $onlineMemberIds}
+  {#if $currentListMembers}
     <ChecklistMembers {currentListMembers} {onlineMemberIds} />
   {/if}
 

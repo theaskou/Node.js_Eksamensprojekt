@@ -69,26 +69,6 @@
   >
 </div>
 
-<dialog
-  id="create-list-dialog"
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
-  bind:this={dialog}
->
-  <label>
-    <div class="mb-2 font-semibold">List name:</div>
-    <input
-      type="text"
-      class="text-2xl w-full"
-      bind:value={newListName}
-      placeholder="Name your new list…"
-    />
-  </label>
-  <div class="mt-4 flex justify-between">
-    <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
-    <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>
-  </div>
-</dialog>
-
 <ul class="flex flex-col gap-3">
   {#each userLists as { listId, listName, members }}
     <li class="list">
@@ -110,3 +90,23 @@
     </li>
   {/each}
 </ul>
+
+<dialog
+  id="create-list-dialog"
+  class="m-auto rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  bind:this={dialog}
+>
+  <label>
+    <div class="mb-2 font-semibold">List name:</div>
+    <input
+      type="text"
+      class="text-2xl w-full"
+      bind:value={newListName}
+      placeholder="Name your new list…"
+    />
+  </label>
+  <div class="mt-4 flex justify-between">
+    <SecondaryButton onclick={clearCurrentItem}>Cancel</SecondaryButton>
+    <Button onclick={addHandler} disabled={isEmptyString}>Add</Button>
+  </div>
+</dialog>

@@ -2,6 +2,7 @@ import { Router } from "express";
 import db from "../database/connection.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import deleteAuthentication from "../utils/passwordHandling/deleteAuth.js";
+import rateLimiter from "../utils/rateLimiters/rateLimiter.js";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ router.get("/users/me", authMiddleware, (req, res) => {
   });
 });
 
-router.post("/users/:id/delete", authMiddleware, async (req, res) => {
+router.post("/users/:id/delete", rateLimiter, authMiddleware, async (req, res) => {
   const userId = Number(req.params.id);
   const verifiedId = req.session.userId;
   const { pwd } = req.body;
@@ -48,7 +49,7 @@ router.post("/users/:id/delete", authMiddleware, async (req, res) => {
       return res.status(error.status).json({ error: error.message });
     }
     console.error(error);
-    res.status(500).json({ error: "Failed to delete user" });
+    res.status(error.status ?? 500).json({ error: "Failed to delete user" });
   }
 });
 

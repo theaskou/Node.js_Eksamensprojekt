@@ -7,10 +7,10 @@
   import { onMount } from "svelte";
   import SecondaryButton from "../lib/SecondaryButton.svelte";
 
-  let name = $state("");
-  let email = $state("");
-  let pwd = $state("");
-  let repeatedPwd = $state("");
+  let name = $state("Jens");
+  let email = $state("jens@example.com");
+  let pwd = $state("verystrongpassword!3729838734783");
+  let repeatedPwd = $state("verystrongpassword!3729838734783");
   let selectedAvatar = $state("");
   let selectedColor = $state("");
   let dialog;
@@ -63,7 +63,7 @@
 
 <dialog
   bind:this={dialog}
-  class="m-auto mx-3 max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
   <div class="flex flex-col items-center">
     <p class="font-semibold">🍪 This website uses cookies 🍪</p>
