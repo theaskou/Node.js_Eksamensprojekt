@@ -46,6 +46,10 @@ router.post("/users", rateLimiter, async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    if (pwd.length < 8) {
+      // return res.status
+    }
+
     if (pwd !== repeatedPwd) {
       return res
         .status(400)

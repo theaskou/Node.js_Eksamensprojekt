@@ -25,6 +25,8 @@
   }
 </script>
 
+<h1>Collaborate with someone on the list</h1>
+
 {#if !userAddedToList}
   <div class="m-auto">
     <h1 class="font-semibold text-2xl mb-8">
