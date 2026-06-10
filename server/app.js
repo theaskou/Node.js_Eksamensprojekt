@@ -24,7 +24,7 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false, 
+    secure: false,
     maxAge: 1000 * 60 * 60 * 24,
   },
 });
@@ -73,6 +73,10 @@ io.on("connection", (socket) => {
     socket.disconnect();
     return;
   }
+
+  setInterval(() => {
+    socket.emit("timestamp", Date.now());
+  }, 1000);
 
   socket.data.userId = userId;
   socket.data.listId = listId;

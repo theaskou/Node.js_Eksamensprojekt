@@ -66,6 +66,10 @@
         withCredentials: true,
       });
 
+      socket.on("timestamp", (timestamp) => {
+        console.log(timestamp);
+      });
+
       socket.on("online-users", (onlineUserIds) => {
         onlineMemberIds.set(onlineUserIds);
       });
